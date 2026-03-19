@@ -1,0 +1,229 @@
+{
+  "metadata": {
+    "observer": {
+      "latitude": 60.1,
+      "longitude": 19.9,
+      "elevation": 10
+    },
+    "date": "2026-03-19",
+    "time": "22:00:00",
+    "timezone": "+02:00"
+  },
+  "objects": [
+    {
+      "id": "sun",
+      "name": "Sun",
+      "type": "star",
+      "description": "The star at the center of our Solar System. It provides light and energy to all planets.",
+      "azimuth": 313.79,
+      "altitude": -21.54,
+      "magnitude": -26.75147
+    },
+    {
+      "id": "moon",
+      "name": "Moon",
+      "type": "moon",
+      "description": "Earth's only natural satellite. Currently a Waxing Crescent phase.",
+      "azimuth": 308.32,
+      "altitude": -13.33,
+      "magnitude": -5.10487
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "type": "planet",
+      "description": "The smallest planet and closest to the Sun. Has no atmosphere.",
+      "azimuth": 332.67,
+      "altitude": -34.09,
+      "magnitude": 1.28704
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "type": "planet",
+      "description": "The hottest planet, covered in thick clouds. Brightest object in the night sky after the Moon.",
+      "azimuth": 300.63,
+      "altitude": -9.44,
+      "magnitude": -3.85389
+    },
+    {
+      "id": "mars",
+      "name": "Mars",
+      "type": "planet",
+      "description": "The Red Planet. Has the largest volcano in the Solar System, Olympus Mons.",
+      "azimuth": 326.16,
+      "altitude": -32.88,
+      "magnitude": 1.18319
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "type": "planet",
+      "description": "The largest planet in the Solar System. Has a giant storm called the Great Red Spot.",
+      "azimuth": 223.72,
+      "altitude": 47.1,
+      "magnitude": -2.30958
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "type": "planet",
+      "description": "Known for its stunning ring system made of ice and rock.",
+      "azimuth": 308.55,
+      "altitude": -19.59,
+      "magnitude": 0.80876
+    },
+    {
+      "id": "uranus",
+      "name": "Uranus",
+      "type": "planet",
+      "description": "An ice giant that rotates on its side. Has faint rings.",
+      "azimuth": 272.61,
+      "altitude": 21.31,
+      "magnitude": 5.76563
+    },
+    {
+      "id": "neptune",
+      "name": "Neptune",
+      "type": "planet",
+      "description": "The farthest planet from the Sun. Has the strongest winds in the Solar System.",
+      "azimuth": 310.88,
+      "altitude": -20.66,
+      "magnitude": 7.95539
+    },
+    {
+      "id": "pluto",
+      "name": "Pluto",
+      "type": "dwarf_planet",
+      "description": "A dwarf planet in the Kuiper Belt. Was reclassified from planet in 2006.",
+      "azimuth": 13.48,
+      "altitude": -51.91,
+      "magnitude": 14.5863
+    }
+  ],
+  "constellations": [
+    {
+      "id": "orion",
+      "name": "Orion",
+      "type": "constellation",
+      "description": "One of the most recognizable constellations. Known as The Hunter.",
+      "azimuth": 200.0,
+      "altitude": 25.0,
+      "magnitude": null,
+      "stars": [
+        {
+          "name": "Betelgeuse",
+          "azimuth": 198.0,
+          "altitude": 27.0
+        },
+        {
+          "name": "Rigel",
+          "azimuth": 202.0,
+          "altitude": 23.0
+        },
+        {
+          "name": "Bellatrix",
+          "azimuth": 196.0,
+          "altitude": 26.0
+        },
+        {
+          "name": "Mintaka",
+          "azimuth": 200.0,
+          "altitude": 25.0
+        },
+        {
+          "name": "Alnilam",
+          "azimuth": 200.5,
+          "altitude": 25.0
+        },
+        {
+          "name": "Alnitak",
+          "azimuth": 201.0,
+          "altitude": 24.5
+        }
+      ]
+    },
+    {
+      "id": "ursa_major",
+      "name": "Ursa Major",
+      "type": "constellation",
+      "description": "The Great Bear. Contains the famous Big Dipper asterism.",
+      "azimuth": 350.0,
+      "altitude": 55.0,
+      "magnitude": null,
+      "stars": [
+        {
+          "name": "Dubhe",
+          "azimuth": 348.0,
+          "altitude": 57.0
+        },
+        {
+          "name": "Merak",
+          "azimuth": 349.0,
+          "altitude": 56.0
+        },
+        {
+          "name": "Phecda",
+          "azimuth": 351.0,
+          "altitude": 55.0
+        },
+        {
+          "name": "Megrez",
+          "azimuth": 350.0,
+          "altitude": 56.0
+        },
+        {
+          "name": "Alioth",
+          "azimuth": 352.0,
+          "altitude": 55.5
+        },
+        {
+          "name": "Mizar",
+          "azimuth": 353.0,
+          "altitude": 54.0
+        },
+        {
+          "name": "Alkaid",
+          "azimuth": 355.0,
+          "altitude": 53.0
+        }
+      ]
+    },
+    {
+      "id": "cassiopeia",
+      "name": "Cassiopeia",
+      "type": "constellation",
+      "description": "A W-shaped constellation named after a queen in Greek mythology.",
+      "azimuth": 20.0,
+      "altitude": 65.0,
+      "magnitude": null,
+      "stars": [
+        {
+          "name": "Schedar",
+          "azimuth": 18.0,
+          "altitude": 64.0
+        },
+        {
+          "name": "Caph",
+          "azimuth": 19.0,
+          "altitude": 65.5
+        },
+        {
+          "name": "Gamma Cas",
+          "azimuth": 20.0,
+          "altitude": 66.0
+        },
+        {
+          "name": "Ruchbah",
+          "azimuth": 21.0,
+          "altitude": 65.0
+        },
+        {
+          "name": "Segin",
+          "azimuth": 22.0,
+          "altitude": 64.5
+        }
+      ]
+    }
+  ]
+}
