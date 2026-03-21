@@ -38,6 +38,7 @@ dependencies:
   sensors_plus: ^7.0.0 #Reads accelerometer & magnetometer
   geolocator: ^14.0.2 #gets GPS location
   http: ^1.6.0 #Makes API requests for celestial data
+  astronomia: ^0.3.2 #For astronomical calculations
   google_fonts: ^8.0.2 #For custom fonts
 
 dev_dependencies:

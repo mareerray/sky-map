@@ -6,6 +6,8 @@ class CelestialObject {
   final double azimuth;     // Compass direction in degrees (0°-360°)
   final double altitude;    // Height above horizon in degrees (-90° to +90°)
   final double? magnitude;  // Brightness in the sky (lower = brighter, optional)
+  final List<Map<String, dynamic>>? stars;
+  final List<List<String>>? lines;
 
   CelestialObject({
     required this.id,
@@ -15,6 +17,8 @@ class CelestialObject {
     required this.azimuth,
     required this.altitude,
     this.magnitude,
+    this.stars,
+    this.lines,
   });
 
   factory CelestialObject.fromJson(Map<String, dynamic> json) {
@@ -27,6 +31,12 @@ class CelestialObject {
       altitude: (json['altitude'] as num).toDouble(),
       magnitude: json['magnitude'] != null
           ? (json['magnitude'] as num).toDouble()
+          : null,
+      stars: json['stars'] != null
+          ? List<Map<String, dynamic>>.from(json['stars'])
+          : null,
+      lines: json['lines'] != null
+          ? List<List<String>>.from(json['lines'].map((line) => List<String>.from(line)))
           : null,
     );
   }

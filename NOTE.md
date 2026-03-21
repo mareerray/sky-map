@@ -2,21 +2,22 @@
 ### Project structure
 ```
 lib/
-├── main.dart                  #    App entry point
-├── app.dart                   #	Root widget, sets up BLoC
+├── main.dart                  #    App entry point ✅ 
+├── app.dart                   #	Root widget, sets up BLoC ✅ 
 ├── bloc/
-│   ├── sky_bloc.dart          #    The kitchen 🍳 — processes events
-│   ├── sky_event.dart         #    Orders sent to the kitchen
-│   └── sky_state.dart         #    Food that comes back to the screen
+│   ├── sky_bloc.dart          #    The kitchen 🍳 — processes events ✅ 
+│   ├── sky_event.dart         #    Orders sent to the kitchen ✅ 
+│   └── sky_state.dart         #    Food that comes back to the screen ✅ 
 ├── models/
-│   └── celestial_object.dart   #   Blueprint for a star/planet/etc.
+│   └── celestial_object.dart   #   Blueprint for a star/planet/etc. ✅ 
 ├── data/
-│   └── celestial_repository.dart   #   	Fetches celestial data from API/file
+│   ├── astro_calculator.dart       #    Calculate real astronomical positions ✅
+│   └── celestial_repository.dart   #    Fetches celestial data from API/file ✅ 
 ├── sensors/
 │   └── sensor_service.dart     #  	Reads phone sensors 
 ├── ui/
-│   ├── sky_screen.dart         #   The main screen widget 
-│   └── sky_painter.dart        #   Draws objects on the black canvas
+│   ├── sky_screen.dart         #   The main screen widget ✅ 
+│   └── sky_painter.dart        #   Draws objects on the black canvas 
 ```
 
 ### Make API call with the token (applicationid:applicationsecret)
@@ -25,3 +26,9 @@ curl --location --request GET 'https://api.astronomyapi.com/api/v2/bodies/positi
 --header 'Authorization: Basic YOUR_BASE64_TOKEN'
 ```
 
+| Phone position	| Expected Alt |
+| ----------------- | ------------ |
+| Flat in palm, screen facing up |	0° |
+| Standing upright like reading	| 90° |
+| Pointing top toward ceiling	| 90° |
+| Pointing top toward floor	| -90° |

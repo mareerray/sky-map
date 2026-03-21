@@ -14,10 +14,10 @@
       "id": "sun",
       "name": "Sun",
       "type": "star",
-      "description": "The star at the center of our Solar System. It provides light and energy to all planets.",
+      "description": "The star at the center of our Solar System.",
       "azimuth": 313.79,
-      "altitude": -21.54,
-      "magnitude": -26.75147
+      "altitude": 20.0,
+      "magnitude": -26.75
     },
     {
       "id": "moon",
@@ -25,81 +25,143 @@
       "type": "moon",
       "description": "Earth's only natural satellite. Currently a Waxing Crescent phase.",
       "azimuth": 308.32,
-      "altitude": -13.33,
-      "magnitude": -5.10487
+      "altitude": 18.0,
+      "magnitude": -5.10
     },
     {
       "id": "mercury",
       "name": "Mercury",
       "type": "planet",
-      "description": "The smallest planet and closest to the Sun. Has no atmosphere.",
+      "description": "The smallest planet and closest to the Sun.",
       "azimuth": 332.67,
-      "altitude": -34.09,
-      "magnitude": 1.28704
+      "altitude": 15.0,
+      "magnitude": 1.28
     },
     {
       "id": "venus",
       "name": "Venus",
       "type": "planet",
-      "description": "The hottest planet, covered in thick clouds. Brightest object in the night sky after the Moon.",
+      "description": "The hottest planet. Brightest object in the night sky after the Moon.",
       "azimuth": 300.63,
-      "altitude": -9.44,
-      "magnitude": -3.85389
+      "altitude": 12.0,
+      "magnitude": -3.85
     },
     {
       "id": "mars",
       "name": "Mars",
       "type": "planet",
-      "description": "The Red Planet. Has the largest volcano in the Solar System, Olympus Mons.",
-      "azimuth": 326.16,
-      "altitude": -32.88,
-      "magnitude": 1.18319
+      "description": "The Red Planet. Has the largest volcano in the Solar System.",
+      "azimuth": 50.0,
+      "altitude": 32.0,
+      "magnitude": 1.18
     },
     {
       "id": "jupiter",
       "name": "Jupiter",
       "type": "planet",
-      "description": "The largest planet in the Solar System. Has a giant storm called the Great Red Spot.",
+      "description": "The largest planet. Has a giant storm called the Great Red Spot.",
       "azimuth": 223.72,
       "altitude": 47.1,
-      "magnitude": -2.30958
+      "magnitude": -2.30
     },
     {
       "id": "saturn",
       "name": "Saturn",
       "type": "planet",
       "description": "Known for its stunning ring system made of ice and rock.",
-      "azimuth": 308.55,
-      "altitude": -19.59,
-      "magnitude": 0.80876
+      "azimuth": 150.0,
+      "altitude": 35.0,
+      "magnitude": 0.80
     },
     {
       "id": "uranus",
       "name": "Uranus",
       "type": "planet",
-      "description": "An ice giant that rotates on its side. Has faint rings.",
+      "description": "An ice giant that rotates on its side.",
       "azimuth": 272.61,
       "altitude": 21.31,
-      "magnitude": 5.76563
+      "magnitude": 5.76
     },
     {
       "id": "neptune",
       "name": "Neptune",
       "type": "planet",
-      "description": "The farthest planet from the Sun. Has the strongest winds in the Solar System.",
-      "azimuth": 310.88,
-      "altitude": -20.66,
-      "magnitude": 7.95539
+      "description": "The farthest planet. Has the strongest winds in the Solar System.",
+      "azimuth": 100.0,
+      "altitude": 18.0,
+      "magnitude": 7.95
     },
     {
       "id": "pluto",
       "name": "Pluto",
       "type": "dwarf_planet",
-      "description": "A dwarf planet in the Kuiper Belt. Was reclassified from planet in 2006.",
-      "azimuth": 13.48,
-      "altitude": -51.91,
-      "magnitude": 14.5863
+      "description": "A dwarf planet in the Kuiper Belt.",
+      "azimuth": 80.0,
+      "altitude": 15.0,
+      "magnitude": 14.58
     }
+  ],
+  "background_stars": [
+    { "azimuth": 10.0,  "altitude": 40.0 },
+    { "azimuth": 25.0,  "altitude": 55.0 },
+    { "azimuth": 40.0,  "altitude": 20.0 },
+    { "azimuth": 55.0,  "altitude": 70.0 },
+    { "azimuth": 60.0,  "altitude": 15.0 },
+    { "azimuth": 75.0,  "altitude": 45.0 },
+    { "azimuth": 85.0,  "altitude": 60.0 },
+    { "azimuth": 95.0,  "altitude": 30.0 },
+    { "azimuth": 110.0, "altitude": 50.0 },
+    { "azimuth": 120.0, "altitude": 25.0 },
+    { "azimuth": 130.0, "altitude": 65.0 },
+    { "azimuth": 140.0, "altitude": 10.0 },
+    { "azimuth": 155.0, "altitude": 42.0 },
+    { "azimuth": 165.0, "altitude": 58.0 },
+    { "azimuth": 175.0, "altitude": 33.0 },
+    { "azimuth": 180.0, "altitude": 72.0 },
+    { "azimuth": 190.0, "altitude": 18.0 },
+    { "azimuth": 200.0, "altitude": 48.0 },
+    { "azimuth": 210.0, "altitude": 62.0 },
+    { "azimuth": 220.0, "altitude": 28.0 },
+    { "azimuth": 230.0, "altitude": 55.0 },
+    { "azimuth": 240.0, "altitude": 38.0 },
+    { "azimuth": 250.0, "altitude": 12.0 },
+    { "azimuth": 260.0, "altitude": 44.0 },
+    { "azimuth": 270.0, "altitude": 67.0 },
+    { "azimuth": 280.0, "altitude": 22.0 },
+    { "azimuth": 290.0, "altitude": 50.0 },
+    { "azimuth": 300.0, "altitude": 35.0 },
+    { "azimuth": 310.0, "altitude": 58.0 },
+    { "azimuth": 320.0, "altitude": 15.0 },
+    { "azimuth": 330.0, "altitude": 42.0 },
+    { "azimuth": 340.0, "altitude": 68.0 },
+    { "azimuth": 350.0, "altitude": 30.0 },
+    { "azimuth": 15.0,  "altitude": 25.0 },
+    { "azimuth": 35.0,  "altitude": 48.0 },
+    { "azimuth": 65.0,  "altitude": 38.0 },
+    { "azimuth": 90.0,  "altitude": 55.0 },
+    { "azimuth": 115.0, "altitude": 20.0 },
+    { "azimuth": 145.0, "altitude": 40.0 },
+    { "azimuth": 170.0, "altitude": 60.0 },
+    { "azimuth": 195.0, "altitude": 15.0 },
+    { "azimuth": 215.0, "altitude": 45.0 },
+    { "azimuth": 245.0, "altitude": 70.0 },
+    { "azimuth": 265.0, "altitude": 32.0 },
+    { "azimuth": 285.0, "altitude": 52.0 },
+    { "azimuth": 315.0, "altitude": 25.0 },
+    { "azimuth": 335.0, "altitude": 47.0 },
+    { "azimuth": 355.0, "altitude": 63.0 },
+    { "azimuth": 45.0,  "altitude": 58.0 },
+    { "azimuth": 135.0, "altitude": 35.0 },
+    { "azimuth": 225.0, "altitude": 22.0 },
+    { "azimuth": 305.0, "altitude": 44.0 },
+    { "azimuth": 18.0,  "altitude": 72.0 },
+    { "azimuth": 78.0,  "altitude": 28.0 },
+    { "azimuth": 158.0, "altitude": 50.0 },
+    { "azimuth": 238.0, "altitude": 18.0 },
+    { "azimuth": 318.0, "altitude": 60.0 },
+    { "azimuth": 22.0,  "altitude": 35.0 },
+    { "azimuth": 182.0, "altitude": 42.0 },
+    { "azimuth": 275.0, "altitude": 15.0 }
   ],
   "constellations": [
     {
@@ -108,85 +170,56 @@
       "type": "constellation",
       "description": "One of the most recognizable constellations. Known as The Hunter.",
       "azimuth": 200.0,
-      "altitude": 25.0,
+      "altitude": 35.0,
       "magnitude": null,
-      "stars": [
-        {
-          "name": "Betelgeuse",
-          "azimuth": 198.0,
-          "altitude": 27.0
-        },
-        {
-          "name": "Rigel",
-          "azimuth": 202.0,
-          "altitude": 23.0
-        },
-        {
-          "name": "Bellatrix",
-          "azimuth": 196.0,
-          "altitude": 26.0
-        },
-        {
-          "name": "Mintaka",
-          "azimuth": 200.0,
-          "altitude": 25.0
-        },
-        {
-          "name": "Alnilam",
-          "azimuth": 200.5,
-          "altitude": 25.0
-        },
-        {
-          "name": "Alnitak",
-          "azimuth": 201.0,
-          "altitude": 24.5
-        }
-      ]
+"stars": [
+  { "name": "Meissa",     "azimuth": 200.0, "altitude": 52.0 },
+  { "name": "Betelgeuse", "azimuth": 183.0, "altitude": 46.0 },
+  { "name": "Bellatrix",  "azimuth": 219.0, "altitude": 48.0 },
+  { "name": "Mintaka",    "azimuth": 191.0, "altitude": 36.0 },
+  { "name": "Alnilam",    "azimuth": 200.0, "altitude": 35.5 },
+  { "name": "Alnitak",    "azimuth": 209.0, "altitude": 35.0 },
+  { "name": "Saiph",      "azimuth": 196.0, "altitude": 25.0 },
+  { "name": "Rigel",      "azimuth": 218.0, "altitude": 26.0 }
+],
+      "lines": [
+        ["Meissa", "Betelgeuse"],
+        ["Meissa", "Bellatrix"],
+        ["Betelgeuse", "Mintaka"],
+        ["Bellatrix", "Alnitak"],
+        ["Mintaka", "Alnilam"],
+        ["Alnitak", "Rigel"],
+        ["Alnilam", "Alnitak"],
+        ["Mintaka", "Saiph"],
+        ["Rigel", "Saiph"]
+    ]
     },
     {
       "id": "ursa_major",
       "name": "Ursa Major",
       "type": "constellation",
       "description": "The Great Bear. Contains the famous Big Dipper asterism.",
-      "azimuth": 350.0,
+      "azimuth": 355.0,
       "altitude": 55.0,
       "magnitude": null,
       "stars": [
-        {
-          "name": "Dubhe",
-          "azimuth": 348.0,
-          "altitude": 57.0
-        },
-        {
-          "name": "Merak",
-          "azimuth": 349.0,
-          "altitude": 56.0
-        },
-        {
-          "name": "Phecda",
-          "azimuth": 351.0,
-          "altitude": 55.0
-        },
-        {
-          "name": "Megrez",
-          "azimuth": 350.0,
-          "altitude": 56.0
-        },
-        {
-          "name": "Alioth",
-          "azimuth": 352.0,
-          "altitude": 55.5
-        },
-        {
-          "name": "Mizar",
-          "azimuth": 353.0,
-          "altitude": 54.0
-        },
-        {
-          "name": "Alkaid",
-          "azimuth": 355.0,
-          "altitude": 53.0
-        }
+        { "name": "Dubhe",  "azimuth": 282.0, "altitude": 62.0 },
+        { "name": "Merak",  "azimuth": 287.0, "altitude": 58.0 },
+        { "name": "Phecda", "azimuth": 297.0, "altitude": 55.0 },
+        { "name": "Megrez", "azimuth": 302.0, "altitude": 60.0 },
+        { "name": "Alioth", "azimuth": 310.0, "altitude": 62.0 },
+        { "name": "Mizar",  "azimuth": 320.0, "altitude": 60.0 },
+        { "name": "Alcor",  "azimuth": 320.5, "altitude": 60.3 },
+        { "name": "Alkaid", "azimuth": 330.0, "altitude": 55.0 }
+      ],
+      "lines": [
+        ["Dubhe", "Merak"],
+        ["Merak", "Phecda"],
+        ["Phecda", "Megrez"],
+        ["Megrez", "Dubhe"],
+        ["Megrez", "Alioth"],
+        ["Alioth", "Mizar"],
+        ["Mizar", "Alkaid"]
       ]
     },
     {
@@ -194,36 +227,23 @@
       "name": "Cassiopeia",
       "type": "constellation",
       "description": "A W-shaped constellation named after a queen in Greek mythology.",
-      "azimuth": 20.0,
-      "altitude": 65.0,
+      "azimuth": 25.0,
+      "altitude": 68.0,
       "magnitude": null,
       "stars": [
-        {
-          "name": "Schedar",
-          "azimuth": 18.0,
-          "altitude": 64.0
-        },
-        {
-          "name": "Caph",
-          "azimuth": 19.0,
-          "altitude": 65.5
-        },
-        {
-          "name": "Gamma Cas",
-          "azimuth": 20.0,
-          "altitude": 66.0
-        },
-        {
-          "name": "Ruchbah",
-          "azimuth": 21.0,
-          "altitude": 65.0
-        },
-        {
-          "name": "Segin",
-          "azimuth": 22.0,
-          "altitude": 64.5
-        }
+        { "name": "Schedar",   "azimuth": 5.0,  "altitude": 65.0 },
+        { "name": "Caph",      "azimuth": 13.0, "altitude": 70.0 },
+        { "name": "Gamma Cas", "azimuth": 22.0, "altitude": 72.0 },
+        { "name": "Ruchbah",   "azimuth": 32.0, "altitude": 68.0 },
+        { "name": "Segin",     "azimuth": 40.0, "altitude": 65.0 }
+      ],
+      "lines": [
+        ["Schedar", "Caph"],
+        ["Caph", "Gamma Cas"],
+        ["Gamma Cas", "Ruchbah"],
+        ["Ruchbah", "Segin"]
       ]
+
     }
   ]
 }

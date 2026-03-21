@@ -1,0 +1,220 @@
+import 'package:flutter/material.dart';
+import '../models/celestial_object.dart';
+
+class SkyPainter extends CustomPainter {
+  final List<CelestialObject> objects;
+  final CelestialObject? selectedObject;
+
+  final double phoneAzimuth;
+  final double phoneAltitude;
+
+  static const double fov = 60.0;
+
+  SkyPainter({
+    required this.objects, 
+    this.selectedObject, 
+    this.phoneAzimuth = 180, 
+    this.phoneAltitude = 45,
+  });
+
+  // Static method — used by both painter and sky_screen.dart
+  static Offset toScreen(double azimuth, double altitude, Size size, double phoneAzimuth, double phoneAltitude) {
+    final double horizonY = size.height - 150;
+    final double x = (azimuth / 360) * size.width;
+    final double y = horizonY - (altitude / 90) * horizonY;
+    return Offset(x, y);
+  }
+
+  // --------------- PAINTING LOGIC ----------------------------
+  @override
+  void paint(Canvas canvas, Size size) {
+    _drawBackground(canvas, size);
+    _drawHorizon(canvas, size);
+    _drawConstellationLines(canvas, size);
+    _drawObjects(canvas, size);
+    _drawCompass(canvas, size);
+  }
+
+  void _drawBackground(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(0xFF0a0a2e),
+          Color(0xFF1a1a4e),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
+  }
+
+  void _drawHorizon(Canvas canvas, Size size) {
+    final double horizonY = size.height - 120; // ← match the same value
+    
+    final linePaint = Paint()
+      ..color = Colors.white24
+      ..strokeWidth = 1.0;
+
+    canvas.drawLine(Offset(0, horizonY), Offset(size.width, horizonY), linePaint);
+
+    final textPainter = TextPainter(
+      text: const TextSpan(
+        text: 'HORIZON',
+        style: TextStyle(color: Colors.white38, fontSize: 11),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    textPainter.paint(canvas, Offset(10, horizonY + 4));
+  }
+
+  void _drawConstellationLines(Canvas canvas, Size size) {
+    final linePaint = Paint()
+      ..color = Color(0xFF04C8B1).withValues(alpha: 0.4)
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
+
+    for (final obj in objects) {
+      if (obj.altitude < 0) continue;
+      if (obj.type != 'constellation' || obj.stars == null || obj.stars!.isEmpty) {
+        continue;
+      }
+
+      // Build a map of star name → screen position
+      final Map<String, Offset> starPositions = {};
+      for (final star in obj.stars!) {
+        final name = star['name'] as String;
+        starPositions[name] = toScreen(
+          (star['azimuth'] as num).toDouble(),
+          (star['altitude'] as num).toDouble(),
+          size, 
+          phoneAzimuth,
+          phoneAltitude
+        );
+      }
+
+      // Draw lines using the connections defined in JSON
+      final lines = obj.lines; // you'll need to add this to your model
+      if (lines == null) continue;
+
+      for (final line in lines) {
+        final from = starPositions[line[0]];
+        final to = starPositions[line[1]];
+        if (from != null && to != null) {
+          canvas.drawLine(from, to, linePaint);
+        }
+      }
+    }
+  }
+
+  void _drawObjects(Canvas canvas, Size size) {
+    for (final obj in objects) {
+      if (obj.altitude < 0) continue; // Don't draw objects below the horizon
+
+      final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
+
+      final Paint paint = Paint()
+        ..color = _colorForType(obj.type)
+        ..style = PaintingStyle.fill;
+
+      canvas.drawCircle(offset, _sizeForType(obj.type), paint);
+
+      if (selectedObject != null && selectedObject!.id == obj.id) {
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: obj.name,
+            style: TextStyle(
+              color: _colorForType(obj.type),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+
+        textPainter.paint(
+          canvas,
+          Offset(offset.dx - textPainter.width / 2, offset.dy + 8),
+        );
+      }
+    }
+  }
+
+  void _drawCompass(Canvas canvas, Size size) {
+    final directions = {
+      'N': 0.0,
+      'NE': 45.0,
+      'E': 90.0,
+      'SE': 135.0,
+      'S': 180.0,
+      'SW': 225.0,
+      'W': 270.0,
+      'NW': 315.0,
+    };
+
+    for (final entry in directions.entries) {
+      final double dAz = ((entry.value - phoneAzimuth) + 540) % 360 - 180;
+
+      // Only show if within field of view
+      if (dAz.abs() > fov / 2) continue;
+
+      // Pin to bottom of screen
+      final double x = (dAz / fov + 0.5) * size.width;
+      const double y = 40.0; // ← fixed at top of screen
+
+      final isNorth = entry.key == 'N';
+
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: entry.key,
+          style: TextStyle(
+            color: isNorth ? Colors.red : Colors.white70,
+            fontSize: isNorth ? 18 : 13,
+            fontWeight: isNorth ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      // Draw a small tick mark
+      final tickPaint = Paint()
+        ..color = isNorth ? Colors.red : Colors.white38
+        ..strokeWidth = isNorth ? 2 : 1;
+      canvas.drawLine(Offset(x, 0), Offset(x, 20), tickPaint);
+
+      // Draw the label
+      textPainter.paint(
+        canvas,
+        Offset(x - textPainter.width / 2, y - textPainter.height),
+      );
+    }
+  }
+
+  Color _colorForType(String type) {
+    switch (type) {
+      case 'star': return const Color.fromARGB(255, 141, 1, 1);
+      case 'planet': return Colors.orangeAccent;
+      case 'moon': return Colors.grey.shade600;
+      case 'constellation': return const Color(0xFF04C8B1).withValues(alpha: 0.5);
+      case 'background_star': return Colors.white.withValues(alpha: 0.6);
+      case 'dwarf_planet': return Colors.orangeAccent.withValues(alpha: 0.7);
+      default: return Colors.white;
+    }
+  }
+
+  double _sizeForType(String type) {
+    switch (type) {
+      case 'star': return 8;
+      case 'planet': return 5;
+      case 'moon': return 7;
+      case 'constellation': return 4;
+      case 'background_star': return 1;
+      case 'dwarf_planet': return 4;
+      default: return 2;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}

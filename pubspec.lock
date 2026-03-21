@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.7.0"
+  astronomia:
+    dependency: "direct main"
+    description:
+      name: astronomia
+      sha256: fdff100ffd08f3103c9dd49433d5da961a61dff03e527f7d765a3a0404689aca
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.2"
   async:
     dependency: transitive
     description:
