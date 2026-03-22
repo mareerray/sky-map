@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'bloc/sky_bloc.dart';
 import 'bloc/sky_event.dart';
 import 'data/celestial_repository.dart';
@@ -17,7 +18,23 @@ class App extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Sky Map',
-        theme: ThemeData.dark(), // Dark theme fits a night sky app 🌙
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.dark(
+            primary: const Color(0xFF4FC3F7), // ← global primary color
+          ),
+          textTheme: TextTheme(
+            bodyLarge: GoogleFonts.poppins(
+              color: Color(0xFF4FC3F7),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            bodyMedium: GoogleFonts.poppins(
+              color: Color(0xFF4FC3F7),
+              fontSize: 14,
+            ),
+          ),
+        ), // Dark theme fits a night sky app 🌙
         home: const SkyScreen(),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/celestial_object.dart';
 
 class SkyPainter extends CustomPainter {
@@ -41,8 +42,8 @@ class SkyPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Color(0xFF0a0a2e),
-          Color(0xFF1a1a4e),
+          Color(0xFF000000),
+          Color(0xFF000510),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
@@ -71,8 +72,8 @@ class SkyPainter extends CustomPainter {
 
   void _drawConstellationLines(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = Color(0xFF04C8B1).withValues(alpha: 0.4)
-      ..strokeWidth = 1.2
+      ..color = Color(0xFF5C6BC0)
+      ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
     for (final obj in objects) {
@@ -124,7 +125,7 @@ class SkyPainter extends CustomPainter {
         final textPainter = TextPainter(
           text: TextSpan(
             text: obj.name,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: _colorForType(obj.type),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -168,7 +169,7 @@ class SkyPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: entry.key,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: isNorth ? Colors.red : Colors.white70,
             fontSize: isNorth ? 18 : 13,
             fontWeight: isNorth ? FontWeight.bold : FontWeight.normal,
@@ -193,24 +194,24 @@ class SkyPainter extends CustomPainter {
 
   Color _colorForType(String type) {
     switch (type) {
-      case 'star': return const Color.fromARGB(255, 141, 1, 1);
-      case 'planet': return Colors.orangeAccent;
-      case 'moon': return Colors.grey.shade600;
-      case 'constellation': return const Color(0xFF04C8B1).withValues(alpha: 0.5);
+      case 'star': return const Color(0xFFFFD700);
+      case 'planet': return Color(0xFF4FC3F7);
+      case 'moon': return Color(0xFFE8E8D0);
+      case 'constellation': return const Color(0xFF5C6BC0);
       case 'background_star': return Colors.white.withValues(alpha: 0.6);
-      case 'dwarf_planet': return Colors.orangeAccent.withValues(alpha: 0.7);
+      case 'dwarf_planet': return Color(0xFFCDA882);
       default: return Colors.white;
     }
   }
 
   double _sizeForType(String type) {
     switch (type) {
-      case 'star': return 8;
-      case 'planet': return 5;
-      case 'moon': return 7;
+      case 'star': return 10;
+      case 'planet': return 6;
+      case 'moon': return 8;
       case 'constellation': return 4;
       case 'background_star': return 1;
-      case 'dwarf_planet': return 4;
+      case 'dwarf_planet': return 3;
       default: return 2;
     }
   }

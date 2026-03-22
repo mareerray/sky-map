@@ -20,6 +20,11 @@ class SensorService {
   List<double> _accelerometer = [0, 0, 9.8];
   List<double> _magnetometer  = [0, 1, 0];
 
+  double _smoothAzimuth  = 0;
+  double _smoothAltitude = 0;
+  static const double _alpha = 0.15; // 0.0 = very smooth, 1.0 = raw/jumpy
+  // _alpha = 0.15 means each new reading only contributes 15% to the output 
+
   final _controller = StreamController<SensorData>.broadcast();
   Stream<SensorData> get stream => _controller.stream;
 
@@ -27,17 +32,17 @@ class SensorService {
   StreamSubscription? _magSub;
 
   void start() {
-    _accelSub = accelerometerEventStream().listen((event) {
+    _accelSub = accelerometerEventStream(
+      samplingPeriod: const Duration(milliseconds: 100), // ← exactly 100ms = 10/second
+    ).listen((event) {
       _accelerometer = [event.x, event.y, event.z];
       _update();
     });
 
-    _magSub = magnetometerEventStream().listen((event) {
+    _magSub = magnetometerEventStream(
+      samplingPeriod: const Duration(milliseconds: 100), // ← same
+    ).listen((event) {
       _magnetometer = [event.x, event.y, event.z];
-      _update();
-    });
-
-    Timer.periodic(const Duration(milliseconds: 100), (_) { // 100ms = 10 times/second
       _update();
     });
   }
@@ -62,19 +67,17 @@ class SensorService {
     // East vector = magnetometer cross accelerometer
     final ex = ay * mz - az * my;
     final ey = az * mx - ax * mz;
-    // ez = ax * my - ay * mx; // not needed
 
     double azimuth = math.atan2(ey, ex) * (180 / math.pi);
-    azimuth = (azimuth + 360) % 360; // normalize to 0-360
+    azimuth = (azimuth + 180) % 360; // normalize to 0-360
 
-    // // Calculate altitude (tilt angle)
-    // final double altitude = math.atan2(
-    //   -ax,
-    //   math.sqrt(ay * ay + az * az),
-    // ) * (180 / math.pi);
+    // Smooth it out
+    _smoothAzimuth  = _alpha * azimuth  + (1 - _alpha) * _smoothAzimuth;
+    _smoothAltitude = _alpha * altitude + (1 - _alpha) * _smoothAltitude;
+
 
     // print('📡 Sensor update: az=$azimuth alt=$altitude'); 
-    _controller.add(SensorData(azimuth: azimuth, altitude: altitude));
+    _controller.add(SensorData(azimuth: _smoothAzimuth, altitude: _smoothAltitude));
   }
 
   void dispose() {

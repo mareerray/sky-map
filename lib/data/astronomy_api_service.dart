@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/celestial_object.dart';
 
 class AstronomyApiService {
-  static const String _appId     = '416bacb7-6118-41e7-901c-876cff2843a2';
-  static const String _appSecret = '915111f195cfb46f3d94f0d22f5cd798f771b5a248e416355967b0ee877c4e4f45e1e6c74559baa18f087a138ee76750bb4dc0c9698a383c370dfb36f0c7b425a9c9f9d30a8ca1b95076ec0c8b940e1d83408be829d3e6dc95deb980d102c73c19a95d757abae84c40ffd782e0cca5ad';
+  String get _appId     => dotenv.env['ASTRONOMY_APP_ID']     ?? '';
+  String get _appSecret => dotenv.env['ASTRONOMY_APP_SECRET'] ?? '';
   static const String _baseUrl   = 'https://api.astronomyapi.com/api/v2';
 
   String get _authHeader {
+    print('🔑 AppId loaded: ${_appId.isNotEmpty ? "YES" : "NO - KEY MISSING!"}');
     final credentials = '$_appId:$_appSecret';
     return 'Basic ${base64Encode(utf8.encode(credentials))}';
   }

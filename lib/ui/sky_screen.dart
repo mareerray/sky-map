@@ -4,6 +4,7 @@ import '../bloc/sky_bloc.dart';
 import '../bloc/sky_state.dart';
 import '../models/celestial_object.dart';
 import 'sky_painter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SkyScreen extends StatefulWidget {
   const SkyScreen({super.key});
@@ -47,11 +48,11 @@ class _SkyScreenState extends State<SkyScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,                    // no shadow
-        title: const Text(
-          '🌌 Sky Map',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
+        title: Text(
+          'Sky Map',
+          style: GoogleFonts.notable(
+            color: Color(0xFF4FC3F7),
+            fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -73,7 +74,7 @@ class _SkyScreenState extends State<SkyScreen> {
                 return Stack(
                   children: [
 
-                    // Sky canvas with tap detection
+                    // Sky canvas with tap detectionr
                     GestureDetector(
                       onTapUp: (details) =>
                           _onTap(details, state.celestialObjects, size, state.phoneAzimuth, state.phoneAltitude),
@@ -95,7 +96,7 @@ class _SkyScreenState extends State<SkyScreen> {
                       child: Text(
                         'Az: ${state.phoneAzimuth.toStringAsFixed(1)}°\n'
                         'Alt: ${state.phoneAltitude.toStringAsFixed(1)}°',
-                        style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
 
@@ -103,10 +104,10 @@ class _SkyScreenState extends State<SkyScreen> {
                     if (_selectedObject != null)
                       Positioned(
                         bottom: 45,
-                        left: 20,
-                        right: 20,
+                        left: 0,
+                        right: 0,
                         child: Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(8),
@@ -118,19 +119,12 @@ class _SkyScreenState extends State<SkyScreen> {
                             children: [
                               Text(
                                 _selectedObject!.name,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 _selectedObject!.description,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 13,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           ),
