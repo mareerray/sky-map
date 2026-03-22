@@ -31,8 +31,7 @@ class SkyBloc extends Bloc<SkyEvent, SkyState> { // tells Flutter: "this BLoC ac
 
     // React to sensor updates
     on<SensorUpdated>((event, emit) {
-      // print('🧭 BLoC got: az=${event.azimuth} alt=${event.altitude}');
-      if (state is SkyLoaded) {
+        print('🧭 BLoC: az=${event.azimuth.toStringAsFixed(1)}°');      if (state is SkyLoaded) {
         final current = state as SkyLoaded;
         emit(SkyLoaded(
           celestialObjects: current.celestialObjects,
@@ -60,6 +59,12 @@ class SkyBloc extends Bloc<SkyEvent, SkyState> { // tells Flutter: "this BLoC ac
     return super.close();
   }
 }
+
+// BLoC Flow
+// 1. LoadSkyObjects → repository → SkyLoaded(objects)
+// 2. _startSensors() → SensorService stream → SensorUpdated events
+// 3. SensorUpdated → emit SkyLoaded(new azimuth/altitude) → screen repaints! ✨
+
 
 // The Star of the Show 🌟
 // - Receives the LoadSkyObjects event

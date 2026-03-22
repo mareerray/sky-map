@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/celestial_object.dart';
+import '../utils/sky_utils.dart';
 
 class SkyPainter extends CustomPainter {
   final List<CelestialObject> objects;
@@ -20,11 +21,21 @@ class SkyPainter extends CustomPainter {
 
   // Static method — used by both painter and sky_screen.dart
   static Offset toScreen(double azimuth, double altitude, Size size, double phoneAzimuth, double phoneAltitude) {
+    // Key: relativeAzimuth = object azimuth MINUS phone azimuth
+    final double relativeAz = ((azimuth - phoneAzimuth) + 360) % 360;
+    
     final double horizonY = size.height - 150;
-    final double x = (azimuth / 360) * size.width;
+    final double x = (relativeAz / 360) * size.width;        // ← uses relativeAz!
     final double y = horizonY - (altitude / 90) * horizonY;
     return Offset(x, y);
   }
+
+  // static Offset toScreen(double azimuth, double altitude, Size size, double phoneAzimuth, double phoneAltitude) {
+  //   final double horizonY = size.height - 150;
+  //   final double x = (azimuth / 360) * size.width;
+  //   final double y = horizonY - (altitude / 90) * horizonY;
+  //   return Offset(x, y);
+  // }
 
   // --------------- PAINTING LOGIC ----------------------------
   @override
@@ -35,6 +46,8 @@ class SkyPainter extends CustomPainter {
     _drawObjects(canvas, size);
     _drawCompass(canvas, size);
   }
+
+  // --------------- Draw Background ------------
 
   void _drawBackground(Canvas canvas, Size size) {
     final paint = Paint()
@@ -49,6 +62,8 @@ class SkyPainter extends CustomPainter {
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
   }
+
+  // --------------- Draw Horizon ------------
 
   void _drawHorizon(Canvas canvas, Size size) {
     final double horizonY = size.height - 120; // ← match the same value
@@ -69,6 +84,8 @@ class SkyPainter extends CustomPainter {
 
     textPainter.paint(canvas, Offset(10, horizonY + 4));
   }
+
+  // --------------- Draw Constellation Lines ------------
 
   void _drawConstellationLines(Canvas canvas, Size size) {
     final linePaint = Paint()
@@ -109,26 +126,36 @@ class SkyPainter extends CustomPainter {
     }
   }
 
+  // --------------- Draw Celestial Objects ------------
+
   void _drawObjects(Canvas canvas, Size size) {
     for (final obj in objects) {
-      if (obj.altitude < 0) continue; // Don't draw objects below the horizon
+      if (obj.altitude < 0) continue;
 
       final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
 
       final Paint paint = Paint()
-        ..color = _colorForType(obj.type)
+        ..color = SkyUtils.colorForType(obj.type)
         ..style = PaintingStyle.fill;
 
-      canvas.drawCircle(offset, _sizeForType(obj.type), paint);
+      canvas.drawCircle(offset, SkyUtils.sizeForType(obj.type), paint);
 
-      if (selectedObject != null && selectedObject!.id == obj.id) {
+      final bool alwaysShowLabel = obj.type == 'star'         ||
+                                  obj.type == 'moon'         ||
+                                  obj.type == 'planet'       ||
+                                  obj.type == 'dwarf_planet' ||
+                                  obj.type == 'constellation'; // ← add this
+
+      final bool isSelected = selectedObject != null && selectedObject!.id == obj.id;
+
+      if (alwaysShowLabel || isSelected) {
         final textPainter = TextPainter(
           text: TextSpan(
             text: obj.name,
             style: GoogleFonts.poppins(
-              color: _colorForType(obj.type),
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+              color: SkyUtils.colorForType(obj.type).withValues(alpha: isSelected ? 1.0 : 0.7),
+              fontSize: isSelected ? 13 : 10,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           textDirection: TextDirection.ltr,
@@ -136,11 +163,13 @@ class SkyPainter extends CustomPainter {
 
         textPainter.paint(
           canvas,
-          Offset(offset.dx - textPainter.width / 2, offset.dy + 8),
+          Offset(offset.dx - textPainter.width / 2, offset.dy + SkyUtils.sizeForType(obj.type) + 1),
         );
       }
     }
   }
+
+  // --------------- Draw Compass ------------
 
   void _drawCompass(Canvas canvas, Size size) {
     final directions = {
@@ -189,30 +218,6 @@ class SkyPainter extends CustomPainter {
         canvas,
         Offset(x - textPainter.width / 2, y - textPainter.height),
       );
-    }
-  }
-
-  Color _colorForType(String type) {
-    switch (type) {
-      case 'star': return const Color(0xFFFFD700);
-      case 'planet': return Color(0xFF4FC3F7);
-      case 'moon': return Color(0xFFE8E8D0);
-      case 'constellation': return const Color(0xFF5C6BC0);
-      case 'background_star': return Colors.white.withValues(alpha: 0.6);
-      case 'dwarf_planet': return Color(0xFFCDA882);
-      default: return Colors.white;
-    }
-  }
-
-  double _sizeForType(String type) {
-    switch (type) {
-      case 'star': return 10;
-      case 'planet': return 6;
-      case 'moon': return 8;
-      case 'constellation': return 4;
-      case 'background_star': return 1;
-      case 'dwarf_planet': return 3;
-      default: return 2;
     }
   }
 

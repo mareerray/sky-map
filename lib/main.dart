@@ -8,5 +8,9 @@ void main() async{
   // Load .env file before starting the app
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  // ← Temporary debug call
+  // await AstronomyApiService().debugApiResponse();
+
   runApp(const App());
 }

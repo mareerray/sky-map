@@ -1,3 +1,9 @@
+# The Final Wiring Diagram
+```dart
+GPS → CelestialRepository → SkyBloc → StreamBuilder → CustomPaint(SkyPainter)
+Sensors → SensorService   → StreamBuilder → phoneAzimuth/phoneAltitude
+Tap → GestureDetector → set selectedObject → highlight + description popup
+```
 
 ### Project structure
 ```
@@ -12,9 +18,12 @@ lib/
 │   └── celestial_object.dart   #   Blueprint for a star/planet/etc. ✅ 
 ├── data/
 │   ├── astro_calculator.dart       #    Calculate real astronomical positions ✅
+│   ├── astronomy_api_service.dart  #    Fetches data from the API ✅
 │   └── celestial_repository.dart   #    Fetches celestial data from API/file ✅ 
 ├── sensors/
 │   └── sensor_service.dart     #  	Reads phone sensors 
+├── utils/               
+│   └── sky_utils.dart          #   How to color, size, describe objects
 ├── ui/
 │   ├── sky_screen.dart         #   The main screen widget ✅ 
 │   └── sky_painter.dart        #   Draws objects on the black canvas 
@@ -63,8 +72,30 @@ What would you like to do next?
 
 🌟 Add more constellations to the JSON
 
-🎨 Polish the UI (colors, star sizes, labels)
+🎨 Polish the UI (colors, star sizes, labels) ✅
 
 📍 Verify GPS is passing real coordinates to the API
 
 📝 Code comments for submission documentation
+
+### Your Compass is Working Great! ✅
+Steady most of the time → ✅ Smoothing working
+
+1 slow circle/minute → ✅ Normal drift, not jitter
+
+Reacts to real movement → ✅ Responsive
+
+What You Are Seeing Is Normal
+text
+Steady for a bit → 1 slow full circle every minute
+          ↓
+This is called "compass drift" — it's NORMAL for phone magnetometers
+Why It Happens
+Magnetic interference — metal holder, nearby electronics, Earth's magnetic field changes
+
+Phone temperature changes — magnetometer drifts with heat
+
+Calibration — phone sensors need occasional recalibration
+
+Quick Calibration Test
+Hold the phone flat and slowly rotate it full 360° circle once or twice. This calibrates the magnetometer and reduces the drift.

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/celestial_object.dart';
+import '../utils/sky_utils.dart';
 
 class AstronomyApiService {
   String get _appId     => dotenv.env['ASTRONOMY_APP_ID']     ?? '';
@@ -10,15 +11,15 @@ class AstronomyApiService {
   static const String _baseUrl   = 'https://api.astronomyapi.com/api/v2';
 
   String get _authHeader {
-    print('🔑 AppId loaded: ${_appId.isNotEmpty ? "YES" : "NO - KEY MISSING!"}');
+    // print('🔑 AppId loaded: ${_appId.isNotEmpty ? "YES" : "NO - KEY MISSING!"}');
     final credentials = '$_appId:$_appSecret';
     return 'Basic ${base64Encode(utf8.encode(credentials))}';
   }
 
   Future<List<CelestialObject>> fetchBodies({
-    double latitude  = 60.1,
-    double longitude = 19.9,
-    double elevation = 10,
+    required double latitude,
+    required double longitude,
+    required double elevation,
   }) async {
     final now  = DateTime.now().toUtc();
     final date = '${now.year}-'
@@ -67,8 +68,8 @@ class AstronomyApiService {
       result.add(CelestialObject(
         id:          id,
         name:        name,
-        type:        _typeFor(id),
-        description: _descriptionFor(id),
+        type:        SkyUtils.typeFor(id),
+        description: SkyUtils.descriptionFor(id),
         azimuth:     azimuth,
         altitude:    altitude,
         magnitude:   magnitude != null
@@ -80,28 +81,58 @@ class AstronomyApiService {
     return result;
   }
 
-  String _typeFor(String id) {
-    switch (id) {
-      case 'sun':   return 'star';
-      case 'moon':  return 'moon';
-      case 'pluto': return 'dwarf_planet';
-      default:      return 'planet';
-    }
-  }
+  // String _typeFor(String id) {
+  //   switch (id) {
+  //     case 'sun':   return 'star';
+  //     case 'moon':  return 'moon';
+  //     case 'pluto': return 'dwarf_planet';
+  //     default:      return 'planet';
+  //   }
+  // }
 
-  String _descriptionFor(String id) {
-    const Map<String, String> descriptions = {
-      'sun':     'The star at the center of our Solar System.',
-      'moon':    'Earth\'s only natural satellite.',
-      'mercury': 'The smallest planet and closest to the Sun.',
-      'venus':   'The hottest planet. Brightest object in the night sky after the Moon.',
-      'mars':    'The Red Planet. Has the largest volcano in the Solar System.',
-      'jupiter': 'The largest planet. Has a giant storm called the Great Red Spot.',
-      'saturn':  'Known for its stunning ring system made of ice and rock.',
-      'uranus':  'An ice giant that rotates on its side.',
-      'neptune': 'The farthest planet. Has the strongest winds in the Solar System.',
-      'pluto':   'A dwarf planet in the Kuiper Belt.',
-    };
-    return descriptions[id] ?? '';
-  }
+  // String _descriptionFor(String id) {
+  //   const Map<String, String> descriptions = {
+  //     'sun':     'The star at the center of our Solar System.',
+  //     'moon':    'Earth\'s only natural satellite.',
+  //     'mercury': 'The smallest planet and closest to the Sun.',
+  //     'venus':   'The hottest planet. Brightest object in the night sky after the Moon.',
+  //     'mars':    'The Red Planet. Has the largest volcano in the Solar System.',
+  //     'jupiter': 'The largest planet. Has a giant storm called the Great Red Spot.',
+  //     'saturn':  'Known for its stunning ring system made of ice and rock.',
+  //     'uranus':  'An ice giant that rotates on its side.',
+  //     'neptune': 'The farthest planet. Has the strongest winds in the Solar System.',
+  //     'pluto':   'A dwarf planet in the Kuiper Belt.',
+  //   };
+  //   return descriptions[id] ?? '';
+  // }
+
+  // Future<void> debugApiResponse() async {
+  //   final now  = DateTime.now().toUtc();
+  //   final date = '${now.year}-'
+  //       '${now.month.toString().padLeft(2,'0')}-'
+  //       '${now.day.toString().padLeft(2,'0')}';
+  //   final time = '${now.hour.toString().padLeft(2,'0')}:'
+  //       '${now.minute.toString().padLeft(2,'0')}:00';
+
+  //   final uri = Uri.parse('$_baseUrl/bodies/positions').replace(
+  //     queryParameters: {
+  //       'latitude':  '60.1',
+  //       'longitude': '19.9',
+  //       'elevation': '10',
+  //       'from_date': date,
+  //       'to_date':   date,
+  //       'time':      time,
+  //     },
+  //   );
+
+  //   final response = await http.get(
+  //     uri,
+  //     headers: {HttpHeaders.authorizationHeader: _authHeader},
+  //   );
+
+  //   print('📡 Status: ${response.statusCode}');
+  //   print('📡 Raw body:');
+  //   print(const JsonEncoder.withIndent('  ').convert(json.decode(response.body)));
+  // }
+
 }

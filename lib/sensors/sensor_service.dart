@@ -22,7 +22,9 @@ class SensorService {
 
   double _smoothAzimuth  = 0;
   double _smoothAltitude = 0;
-  static const double _alpha = 0.15; // 0.0 = very smooth, 1.0 = raw/jumpy
+  double _lastEmittedAzimuth  = -999; 
+  double _lastEmittedAltitude = -999; 
+  static const double _alpha = 0.05; // 0.0 = very smooth, 1.0 = raw/jumpy
   // _alpha = 0.15 means each new reading only contributes 15% to the output 
 
   final _controller = StreamController<SensorData>.broadcast();
@@ -75,9 +77,18 @@ class SensorService {
     _smoothAzimuth  = _alpha * azimuth  + (1 - _alpha) * _smoothAzimuth;
     _smoothAltitude = _alpha * altitude + (1 - _alpha) * _smoothAltitude;
 
+    // ✅ FIX: Only emit if something changed more than 1 degree
+    final azDiff  = (_smoothAzimuth  - _lastEmittedAzimuth).abs();
+    final altDiff = (_smoothAltitude - _lastEmittedAltitude).abs();
 
-    // print('📡 Sensor update: az=$azimuth alt=$altitude'); 
-    _controller.add(SensorData(azimuth: _smoothAzimuth, altitude: _smoothAltitude));
+    if (azDiff > 2.5 || altDiff > 2.5) {
+      _lastEmittedAzimuth  = _smoothAzimuth;
+      _lastEmittedAltitude = _smoothAltitude;
+
+      // print('📡 Sensor update: az=$azimuth alt=$altitude'); 
+      _controller.add(SensorData(azimuth: _smoothAzimuth, altitude: _smoothAltitude
+      ));
+    }
   }
 
   void dispose() {
