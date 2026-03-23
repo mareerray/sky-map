@@ -1,6 +1,6 @@
 // GPS → AstronomyAPI → constellations + background stars → done ✅
 import 'dart:convert';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/celestial_object.dart';
@@ -73,10 +73,11 @@ class CelestialRepository {
           starType = 'bright_star'; // Very bright
         } else if (mag <= 2.5) {
           starType = 'star'; // Normal stars
-        }   
+        } else {
+          starType = 'bg_star'; // Fainter stars as background
+        }
 
         final coords = astro.getStarHorizontal(raHours: raDeg / 15.0, decDeg: decDeg);
-        print('DEBUG $name az=${coords['azimuth']} alt=${coords['altitude']}');
 
         final az = coords['azimuth'] ?? 0.0;
         final alt = coords['altitude'] ?? 0.0;
@@ -96,7 +97,7 @@ class CelestialRepository {
       }
     }
 
-    print('⭐ Loaded ${stars.length} constellation stars from CSV');
+    // print('⭐ Loaded ${stars.length} constellation stars from CSV');
     return stars;
   }
 
@@ -141,42 +142,74 @@ class CelestialRepository {
         }
       });
       
-      print('📊 Loaded ${lines.length} constellations with lines');
       return lines;
     } catch (e) {
       print('⚠️ Constellation lines failed: $e, using painter lines only');
       return {}; // Empty map = no crash
     }
   }
-
+  
   List<CelestialObject> _groupStarsByConstellation(
     List<CelestialObject> stars,
     Map<String, List<List<String>>> lines,
   ) {
-    final Map<String, List<CelestialObject>> groups = {};
-    
-    for (final star in stars) {
-      final con = star.name.toLowerCase(); // e.g. "betelgeuse" or "ori"
-      if (!groups.containsKey(con)) groups[con] = [];
-      groups[con]!.add(star);
-    }
-
     final result = <CelestialObject>[];
-    for (final entry in groups.entries) {
-      final conName = entry.key.toUpperCase();
-      result.add(CelestialObject(
-        id: 'constellation_$conName',
-        name: conName,
-        type: 'constellation',
-        stars: entry.value.map((star) => {
-          'name': star.name,
-          'azimuth': star.azimuth,
-          'altitude': star.altitude,
-        }).toList(), 
-        lines: lines[conName.toLowerCase()] ?? [],
-        azimuth: 0, altitude: 0, // dummy
-        description: '$conName constellation',
-      ));
+    
+    final conData = {
+      'ori': lines['ori']!,
+      'uma': lines['uma']!,
+      'cas': lines['cas']!,
+      'leo': lines['leo']!,
+      'cyg': lines['cyg']!,
+      'gem': lines['gem']!,
+    };
+    
+    // Full names [web:14][web:15]
+    final fullNames = {
+      'ori': 'Orion',
+      'uma': 'Ursa Major',
+      'cas': 'Cassiopeia', 
+      'leo': 'Leo',
+      'cyg': 'Cygnus',
+      'gem': 'Gemini',
+    };
+    
+    for (final entry in conData.entries) {
+      final conAbbr = entry.key.toUpperCase();
+      final conName = fullNames[entry.key] ?? conAbbr;  // Full or abbr
+      final conLines = entry.value;
+      
+      final Set<String> starNames = {};
+      for (final line in conLines) {
+        starNames.add(line[0] as String);
+        if (line.length > 1) starNames.add(line[1] as String);
+      }
+      
+      double totalAz = 0, totalAlt = 0;
+      int count = 0;
+      for (final starName in starNames) {
+        final star = stars.firstWhereOrNull((s) => 
+          s.name.toLowerCase().contains(starName.toLowerCase()));
+        if (star != null && star.altitude > -50) {
+          totalAz += star.azimuth;
+          totalAlt += star.altitude;
+          count++;
+        }
+      }
+      
+      if (count > 0) {
+        final avgAz = totalAz / count;
+        final avgAlt = totalAlt / count;
+        
+        result.add(CelestialObject(
+          id: 'constellation_$conAbbr',
+          name: conName,  // "Orion" not "ORI"
+          type: 'constellation',
+          azimuth: avgAz,
+          altitude: avgAlt,
+          description: '$conName constellation',
+        ));
+      }
     }
     return result;
   }

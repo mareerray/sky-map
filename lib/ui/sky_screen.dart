@@ -143,17 +143,6 @@ class _SkyScreenState extends State<SkyScreen> {
                       ),
                     ),
 
-                    // Inside Stack children, after GestureDetector:
-                    // Positioned(
-                    //   top: 20,
-                    //   left: 20,
-                    //   child: Text(
-                    //     'Az: ${state.phoneAzimuth.toStringAsFixed(1)}°\n'
-                    //     'Alt: ${state.phoneAltitude.toStringAsFixed(1)}°',
-                    //     style: Theme.of(context).textTheme.bodyMedium,
-                    //   ),
-                    // ),
-
                     // Info card — only visible when an object is tapped
                     if (_selectedObject != null)
                       Positioned(
