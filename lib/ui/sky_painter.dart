@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/celestial_object.dart';
 import '../utils/sky_utils.dart';
@@ -6,6 +7,7 @@ import '../utils/sky_utils.dart';
 class SkyPainter extends CustomPainter {
   final List<CelestialObject> objects;
   final CelestialObject? selectedObject;
+  final Map<String, List<List<String>>> constellationLines; 
 
   final double phoneAzimuth;
   final double phoneAltitude;
@@ -15,8 +17,10 @@ class SkyPainter extends CustomPainter {
   SkyPainter({
     required this.objects, 
     this.selectedObject, 
+    this.constellationLines = const {},
     this.phoneAzimuth = 180, 
     this.phoneAltitude = 45,
+
   });
 
   // Static method — used by both painter and sky_screen.dart
@@ -29,13 +33,6 @@ class SkyPainter extends CustomPainter {
     final double y = horizonY - (altitude / 90) * horizonY;
     return Offset(x, y);
   }
-
-  // static Offset toScreen(double azimuth, double altitude, Size size, double phoneAzimuth, double phoneAltitude) {
-  //   final double horizonY = size.height - 150;
-  //   final double x = (azimuth / 360) * size.width;
-  //   final double y = horizonY - (altitude / 90) * horizonY;
-  //   return Offset(x, y);
-  // }
 
   // --------------- PAINTING LOGIC ----------------------------
   @override
@@ -86,51 +83,112 @@ class SkyPainter extends CustomPainter {
   }
 
   // --------------- Draw Constellation Lines ------------
+// --------------- Draw Constellation Lines from JSON ------------
 
-  void _drawConstellationLines(Canvas canvas, Size size) {
-    final linePaint = Paint()
-      ..color = Color(0xFF5C6BC0)
-      ..strokeWidth = 0.5
-      ..style = PaintingStyle.stroke;
+void _drawConstellationLines(Canvas canvas, Size size) {
+  // print('🔍 Drawing ${constellationLines.length} JSON constellations...');
 
-    for (final obj in objects) {
-      if (obj.altitude < 0) continue;
-      if (obj.type != 'constellation' || obj.stars == null || obj.stars!.isEmpty) {
-        continue;
-      }
+  final linePaint = Paint()
+    ..color = const Color(0xFFCDA882) 
+    ..strokeWidth = 0.5
+    ..style = PaintingStyle.stroke;
+    // ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1.5);
 
-      // Build a map of star name → screen position
-      final Map<String, Offset> starPositions = {};
-      for (final star in obj.stars!) {
-        final name = star['name'] as String;
-        starPositions[name] = toScreen(
-          (star['azimuth'] as num).toDouble(),
-          (star['altitude'] as num).toDouble(),
-          size, 
-          phoneAzimuth,
-          phoneAltitude
-        );
-      }
+  int drawnLines = 0;
 
-      // Draw lines using the connections defined in JSON
-      final lines = obj.lines; // you'll need to add this to your model
-      if (lines == null) continue;
+  // Loop your 6 constellations: ori, uma, cas, leo, cyg, gem
+  for (final conEntry in constellationLines.entries) {
+    final conId = conEntry.key.toLowerCase();  // 'ori', 'uma' etc.
+    final lines = conEntry.value;
 
-      for (final line in lines) {
-        final from = starPositions[line[0]];
-        final to = starPositions[line[1]];
-        if (from != null && to != null) {
-          canvas.drawLine(from, to, linePaint);
-        }
+    for (final line in lines) {
+      if (line.length < 2) continue;
+
+      final star1Name = line[0].toString().toLowerCase();
+      final star2Name = line[1].toString().toLowerCase();
+
+      // Flexible name match (handles gamma_cas → cih)
+      final star1 = objects.firstWhereOrNull((obj) => 
+        obj.name.toLowerCase() == star1Name && obj.altitude > 0);
+      final star2 = objects.firstWhereOrNull((obj) => 
+        obj.name.toLowerCase() == star2Name && obj.altitude > 0);
+      // final star1 = objects.firstWhereOrNull((obj) => 
+      //   obj.name.toLowerCase().contains(star1Name.replaceAll('_', '')) || 
+      //   star1Name.contains(obj.name.toLowerCase()) &&
+      //   obj.altitude > 0 && obj.altitude < 90);
+
+      // final star2 = objects.firstWhereOrNull((obj) => 
+      //   obj.name.toLowerCase().contains(star2Name.replaceAll('_', '')) || 
+      //   star2Name.contains(obj.name.toLowerCase()) &&
+      //   obj.altitude > 0 && obj.altitude < 90);
+
+      if (star1 != null && star2 != null) {
+        print('STAR1 ${star1.name} az=${star1.azimuth} alt=${star1.altitude}');  // 🆕 ADD
+        print('STAR2 ${star2.name} az=${star2.azimuth} alt=${star2.altitude}');  // 🆕 ADD
+        final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
+        final pos2 = toScreen(star2.azimuth, star2.altitude, size, phoneAzimuth, phoneAltitude);
+
+        print('📍 ${conId.toUpperCase()}: ${star1.name}-${star2.name}');
+        print('📍  x=${pos1.dx.toStringAsFixed(0)},${pos1.dy.toStringAsFixed(0)} → ${pos2.dx.toStringAsFixed(0)},${pos2.dy.toStringAsFixed(0)}');
+
+        canvas.drawLine(pos1, pos2, linePaint);
+        drawnLines++;
       }
     }
   }
+  print('✅ Drew $drawnLines lines from JSON');
+}
+
+//  void _drawConstellationLines(Canvas canvas, Size size) {
+//   print('🔍 Searching for constellation lines...');
+//   final starNames = objects
+//       .where((obj) => obj.type == 'star' || obj.type == 'bright_star')
+//       .map((obj) => obj.name.toLowerCase())
+//       .toList();
+//   print('⭐ Available stars: $starNames');
+
+//   final linePaint = Paint()
+//     ..color = const Color(0xFFCDA882).withValues(alpha:0.8)
+//     ..strokeWidth = 1.0
+//     ..style = PaintingStyle.stroke;
+
+//   final constellationLines = [
+//     ['betelgeuse', 'bellatrix'],
+//     ['bellatrix', 'rigel'],
+//     ['rigel', 'saiph'],
+//     ['dubhe', 'merak'],
+//     ['merak', 'phecda'],
+//     ['caph', 'schedar'],
+//   ];
+
+//   int drawnLines = 0;
+//   for (final line in constellationLines) {
+
+//     final star1 = objects.firstWhereOrNull((obj) => 
+//       obj.name.toLowerCase() == line[0].toLowerCase() && obj.altitude > 0 && obj.altitude < 90);
+//     final star2 = objects.firstWhereOrNull((obj) => 
+//       obj.name.toLowerCase() == line[1].toLowerCase() && obj.altitude > 0 && obj.altitude < 90);
+
+
+//     if (star1 != null && star2 != null) {
+//       final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
+//       final pos2 = toScreen(star2.azimuth, star2.altitude, size, phoneAzimuth, phoneAltitude);
+
+//       print('📍 ${star1.name}: x=${pos1.dx.toStringAsFixed(0)} y=${pos1.dy.toStringAsFixed(0)}');
+//       print('📍 ${star2.name}: x=${pos2.dx.toStringAsFixed(0)} y=${pos2.dy.toStringAsFixed(0)}');
+
+//       canvas.drawLine(pos1, pos2, linePaint);
+//       drawnLines++;
+//       print('✅ LINE: ${star1.name}-${star2.name}(${drawnLines})');
+//     }
+//   }
+// }
 
   // --------------- Draw Celestial Objects ------------
 
   void _drawObjects(Canvas canvas, Size size) {
     for (final obj in objects) {
-      if (obj.altitude < 0) continue;
+      if (obj.altitude < -30) continue;  // DEBUGGGGGG ✅
 
       final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
 

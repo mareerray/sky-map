@@ -66,7 +66,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - assets/celestial_data.json
+      - assets/hygdata_v42.csv
+      - assets/constellation_lines.json
       - .env
   #   - images/a_dot_ham.jpeg
 

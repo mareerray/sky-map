@@ -5,50 +5,52 @@ import '../sensors/sensor_service.dart';
 import 'sky_event.dart';
 import 'sky_state.dart';
 
-class SkyBloc extends Bloc<SkyEvent, SkyState> { // tells Flutter: "this BLoC accepts SkyEvents and produces SkyStates"
-
+class SkyBloc extends Bloc<SkyEvent, SkyState> {
   final CelestialRepository repository;
   final SensorService _sensorService = SensorService();
   StreamSubscription? _sensorSubscription;
 
+  SkyBloc(this.repository) : super(SkyLoading()) {
+    on<LoadSkyObjects>(_onLoadSkyObjects);
+    on<SensorUpdated>(_onSensorUpdated);
+  }
 
-  // SkyInitial is the very first state before anything happens
-  SkyBloc(this.repository) : super(SkyLoading()) { // the starting state when BLoC is first created
+  Future<void> _onLoadSkyObjects(LoadSkyObjects event, Emitter<SkyState> emit) async {
+    emit(SkyLoading());
 
-    // Load sky objects
-    on<LoadSkyObjects>((event, emit) async { // a listener that wakes up only when LoadSkyObjects event arrives
-      emit(SkyLoading()); // Tell UI: "I'm working on it..."
+    try {
+      final objects = await repository.loadCelestialObjects();
+      final lines = await repository.loadConstellationLines();  // ✅ Load here
 
-      try {
-        final objects = await repository.loadCelestialObjects();
-        emit(SkyLoaded(celestialObjects: objects)); // Tell UI: "Here is your data!"
-        // Start sensors AFTER data is loaded
-        _startSensors();
-      } catch (e) {
-        emit(SkyError('Failed to load sky data: $e')); // Tell UI: "Something broke!"
-      }
-    });
+      emit(SkyLoaded(
+        celestialObjects: objects,
+        phoneAzimuth: 0.0,  // Default
+        phoneAltitude: 45.0,
+        constellationLines: lines,  // ✅ Pass JSON
+      ));
 
-    // React to sensor updates
-    on<SensorUpdated>((event, emit) {
-        print('🧭 BLoC: az=${event.azimuth.toStringAsFixed(1)}°');      if (state is SkyLoaded) {
-        final current = state as SkyLoaded;
-        emit(SkyLoaded(
-          celestialObjects: current.celestialObjects,
-          phoneAzimuth:  event.azimuth,
-          phoneAltitude: event.altitude,
-        ));
-      }
-    });  
+      _startSensors();
+    } catch (e) {
+      emit(SkyError('Failed to load sky data: $e'));
+    }
+  }
+
+  void _onSensorUpdated(SensorUpdated event, Emitter<SkyState> emit) {
+    if (state is SkyLoaded) {
+      final current = state as SkyLoaded;
+      emit(SkyLoaded(
+        celestialObjects: current.celestialObjects,
+        phoneAzimuth: event.azimuth,
+        phoneAltitude: event.altitude,
+        constellationLines: current.constellationLines,  // ✅ Keep lines
+      ));
+    }
   }
 
   void _startSensors() {
     _sensorService.start();
     _sensorSubscription = _sensorService.stream.listen((data) {
-      add(SensorUpdated(
-        azimuth:  data.azimuth,
-        altitude: data.altitude,
-      ));
+      add(SensorUpdated(azimuth: data.azimuth, altitude: data.altitude));
     });
   }
 

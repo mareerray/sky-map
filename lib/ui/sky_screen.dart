@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sky_map/bloc/sky_event.dart';
 import '../bloc/sky_bloc.dart';
 import '../bloc/sky_state.dart';
 import '../models/celestial_object.dart';
@@ -15,6 +16,15 @@ class SkyScreen extends StatefulWidget {
 
 class _SkyScreenState extends State<SkyScreen> {
   CelestialObject? _selectedObject;
+
+  @override
+  void initState() {
+    super.initState();
+    // 🆕 TRIGGER DATA LOADING!
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SkyBloc>().add(LoadSkyObjects());
+    });
+  }
 
   void _onTap(TapUpDetails details, List<CelestialObject> objects, Size size, double phoneAzimuth, double phoneAltitude) {
     final tapX = details.localPosition.dx;
@@ -45,19 +55,62 @@ class _SkyScreenState extends State<SkyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,                    // no shadow
-        title: Text(
-          'Sky Map',
-          style: GoogleFonts.notable(
-            color: Color(0xFF4FC3F7),
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60), // Fixed height
+        child: BlocBuilder<SkyBloc, SkyState>(
+          builder: (context, state) {
+            return AppBar(
+              backgroundColor: Colors.black,
+              elevation: 0,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Title
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(left: 16), // ← Space on left
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Sky Map',
+                        style: GoogleFonts.notable(
+                          color: Color(0xFF4FC3F7),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // Sensors (only show when loaded)
+                  if (state is SkyLoaded)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Az: ${state.phoneAzimuth.toStringAsFixed(0)}°',
+                            style: GoogleFonts.poppins(color: Colors.cyan, fontSize: 14),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Alt: ${state.phoneAltitude.toStringAsFixed(0)}°',
+                            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              centerTitle: false,
+            );
+          },
         ),
-        centerTitle: true,
-      ),
+      ),      
       body: BlocBuilder<SkyBloc, SkyState>(
         builder: (context, state) {
 
@@ -82,6 +135,7 @@ class _SkyScreenState extends State<SkyScreen> {
                         painter: SkyPainter(
                           objects: state.celestialObjects,
                           selectedObject: _selectedObject,
+                          constellationLines: state.constellationLines,
                           phoneAzimuth: state.phoneAzimuth,
                           phoneAltitude: state.phoneAltitude,
                         ),
@@ -90,15 +144,15 @@ class _SkyScreenState extends State<SkyScreen> {
                     ),
 
                     // Inside Stack children, after GestureDetector:
-                    Positioned(
-                      top: 20,
-                      left: 20,
-                      child: Text(
-                        'Az: ${state.phoneAzimuth.toStringAsFixed(1)}°\n'
-                        'Alt: ${state.phoneAltitude.toStringAsFixed(1)}°',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
+                    // Positioned(
+                    //   top: 20,
+                    //   left: 20,
+                    //   child: Text(
+                    //     'Az: ${state.phoneAzimuth.toStringAsFixed(1)}°\n'
+                    //     'Alt: ${state.phoneAltitude.toStringAsFixed(1)}°',
+                    //     style: Theme.of(context).textTheme.bodyMedium,
+                    //   ),
+                    // ),
 
                     // Info card — only visible when an object is tapped
                     if (_selectedObject != null)

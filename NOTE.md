@@ -99,3 +99,70 @@ Calibration — phone sensors need occasional recalibration
 
 Quick Calibration Test
 Hold the phone flat and slowly rotate it full 360° circle once or twice. This calibrates the magnetometer and reduces the drift.
+
+
+
+## "Real-Time" Doesn't Mean What You Might Think
+The phrase "visible from the user's location" is the key part. It means the app should only show objects that are above the horizon at your current location and time — not that the constellation shapes themselves change.
+​
+
+Think of it this way:
+
+🌍 Your location changes → different constellations become visible
+
+🕐 Time changes → the sky rotates, so different constellations rise and set
+
+📱 Your phone direction changes → you see a different portion of the sky
+
+But the stars inside a constellation never move relative to each other. Orion's stars are always in the same pattern — the "real-time" part is about which direction to draw them on your screen based on your phone's sensors.
+
+The Plan Still Works ✅
+text
+AstronomyAPI  →  Planets + Sun + Moon (real-time positions)
+HYG Star File →  Constellation star positions (fixed coordinates)
+      ↓
+Your app uses GPS + sensors to calculate:
+"Is this object above MY horizon right now?
+ And WHERE on my screen should I draw it?"
+The real-time calculation happens in your app, not in the data source. The star file gives you the raw sky coordinates (like an address), and your app figures out if that address is currently "visible" from Helsinki at 10pm tonight.
+​
+
+A Simple Analogy
+Think of a world map. The cities (stars) never move on the map. But depending on where you stand and which direction you face, different cities appear in front of you. Your app does exactly this — it takes fixed star positions and calculates what's currently in your "view window."
+
+So your project requirement is fully satisfied — the real-time part is the rendering logic, not the data source. The HYG file approach is completely valid. ✅
+
+## If Double-Click Doesn't Work
+Sometimes Mac opens it instead of extracting. In that case:
+
+Open Terminal
+
+Drag the .gz file into the Terminal window (this auto-types the file path)
+
+Add gunzip before the path so it looks like:
+
+bash
+gunzip /Users/yourname/Downloads/hygdata_v42.csv.gz
+Press Enter — done! ✅
+
+## Let's read the exact wording carefully:
+
+"Send a request to a public API to retrieve information about celestial objects or use a valid file"
+
+✅ Yes, the CSV File is Valid!
+The instructions explicitly allow either an API or a file. Your setup is:
+​
+
+Data	Source	Valid?
+Planets, Sun, Moon	AstronomyAPI (real-time)	✅ Public API
+Constellation stars	hygdata_v42.csv	✅ Valid file
+This actually makes your project stronger than using just one source — you're using both an API AND a file, which shows extra effort. 💪
+
+What Makes a File "Valid"?
+The HYG database is considered valid because:
+
+It is a well-known, scientifically accurate star catalog used by astronomers and developers worldwide
+
+The data comes from real sources: Hipparcos, Yale Bright Star, and Gliese catalogs
+
+Your teacher's checklist even says: "If the data comes from a file, check its validity" — HYG is absolutely defensible when your teacher asks

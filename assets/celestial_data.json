@@ -89,19 +89,7 @@
   { "name": "Alnitak",    "azimuth": 209.0, "altitude": 35.0 },
   { "name": "Saiph",      "azimuth": 196.0, "altitude": 25.0 },
   { "name": "Rigel",      "azimuth": 218.0, "altitude": 26.0 }
-],
-      "lines": [
-        ["Meissa", "Betelgeuse"],
-        ["Meissa", "Bellatrix"],
-        ["Betelgeuse", "Mintaka"],
-        ["Bellatrix", "Alnitak"],
-        ["Mintaka", "Alnilam"],
-        ["Alnitak", "Rigel"],
-        ["Alnilam", "Alnitak"],
-        ["Mintaka", "Saiph"],
-        ["Rigel", "Saiph"]
-    ]
-    },
+]    },
     {
       "id": "ursa_major",
       "name": "Ursa Major",
@@ -119,17 +107,7 @@
         { "name": "Mizar",  "azimuth": 320.0, "altitude": 60.0 },
         { "name": "Alcor",  "azimuth": 320.5, "altitude": 60.3 },
         { "name": "Alkaid", "azimuth": 330.0, "altitude": 55.0 }
-      ],
-      "lines": [
-        ["Dubhe", "Merak"],
-        ["Merak", "Phecda"],
-        ["Phecda", "Megrez"],
-        ["Megrez", "Dubhe"],
-        ["Megrez", "Alioth"],
-        ["Alioth", "Mizar"],
-        ["Mizar", "Alkaid"]
-      ]
-    },
+      ]    },
     {
       "id": "cassiopeia",
       "name": "Cassiopeia",
@@ -144,14 +122,6 @@
         { "name": "Gamma Cas", "azimuth": 22.0, "altitude": 72.0 },
         { "name": "Ruchbah",   "azimuth": 32.0, "altitude": 68.0 },
         { "name": "Segin",     "azimuth": 40.0, "altitude": 65.0 }
-      ],
-      "lines": [
-        ["Schedar", "Caph"],
-        ["Caph", "Gamma Cas"],
-        ["Gamma Cas", "Ruchbah"],
-        ["Ruchbah", "Segin"]
-      ]
-
-    }
+      ]    }
   ]
 }

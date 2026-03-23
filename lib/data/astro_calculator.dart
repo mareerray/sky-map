@@ -78,4 +78,35 @@ class AstroCalculator {
     final eq = elliptic.position(planet, earth, jd);
     return _toHorizontal(eq.ra, eq.dec, jd);
   }
+
+  Map<String, double> getStarHorizontal({
+    required double raHours,
+    required double decDeg,
+    DateTime? time,
+  }) {
+    final dt = time ?? DateTime.now();
+    final jd = _toJD(dt);
+
+    final raRad  = toRad(raHours * 15.0); // hours → degrees → radians
+    final decRad = toRad(decDeg);         // degrees → radians
+
+    return _toHorizontal(raRad, decRad, jd);
+  }
 }
+
+// This AstroCalculator already does exactly what you need:
+
+// - Takes your latitude / longitude
+
+// - Computes Julian Date and Local Sidereal Time
+
+// - Converts RA/Dec → Azimuth/Altitude in _toHorizontal
+
+// - Gives you Sun, Moon, Planets in horizontal coordinates
+// ​
+
+// So the best move now is:
+
+// - Use AstroCalculator._toHorizontal() for your stars from the CSV
+
+// - Keep using AstronomyAPI only if you want, but you could even drop it later and just use astronomia for everything

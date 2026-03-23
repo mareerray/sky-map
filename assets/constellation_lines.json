@@ -1,0 +1,41 @@
+{
+  "ori": [  
+    ["betelgeuse", "bellatrix"],
+    ["bellatrix", "rigel"],
+    ["rigel", "saiph"],
+    ["saiph", "betelgeuse"],
+    ["bellatrix", "alnitak"],
+    ["alnitak", "mintaka"],
+    ["mintaka", "alnilam"],
+    ["alnilam", "alnitak"]
+  ],
+  "uma": [  
+    ["dubhe", "merak"],
+    ["merak", "phecda"],
+    ["phecda", "megrez"],
+    ["megrez", "alioth"],
+    ["alioth", "mizar"],
+    ["mizar", "alkaid"]
+  ],
+  "cas": [  
+    ["schedar", "caph"],
+    ["caph", "gamma_cas"],
+    ["gamma_cas", "ruchbah"],
+    ["ruchbah", "segin"]
+  ],
+  "leo": [  
+    ["regulus", "denebola"],
+    ["regulus", "algieba"],
+    ["algieba", "zosma"]
+  ],
+  "cyg": [ 
+    ["denneb", "albaire"],
+    ["albaire", "gamma_cyg"],
+    ["gamma_cyg", "delta_cyg"]
+  ],
+  "gem": [  
+    ["pollux", "castor"],
+    ["pollux", "alhena"],
+    ["alhena", "tejat"]
+  ]
+}

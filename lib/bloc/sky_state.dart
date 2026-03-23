@@ -8,11 +8,13 @@ class SkyLoaded extends SkyState {
   final List<CelestialObject> celestialObjects;
   final double phoneAzimuth;   
   final double phoneAltitude;  
+  final Map<String, List<List<String>>> constellationLines; 
 
   SkyLoaded({
     required this.celestialObjects,
     this.phoneAzimuth  = 180, // default facing south
     this.phoneAltitude = 45, // default tilted up
+    this.constellationLines = const {},
   });
 }
 
