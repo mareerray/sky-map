@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 class SkyUtils {
   // 🎨 Colors for each celestial type
@@ -17,16 +18,14 @@ class SkyUtils {
   }
 
   // 📏 Sizes for each celestial type
-  static double sizeForType(String type) {
+  static double sizeForType(String type, {required double magnitude}) {
     switch (type) {
-      case 'star': return 1.8;
-      case 'bright_star': return 2.0;
+      case 'star': return 4;
+      case 'bright_star': return 4;
       case 'planet': return 6;
       case 'moon': return 8;
       case 'sun': return 15;
-      case 'constellation': return 4;
-      case 'background_star': return 1;
-      case 'dwarf_planet': return 3;
+      case 'dwarf_planet': return 4;
       case 'bg_star':     return 1.0; 
       default: return 2;
     }
@@ -58,9 +57,42 @@ class SkyUtils {
     };
     return descriptions[id.toLowerCase()] ?? '';
   }
+
+    static Path starPath(Offset center, double radius, {int points = 5}) {
+    final path = Path();
+    final outer = radius;
+    final inner = radius * 0.38;  // Pointy star
+    
+    for (int i = 0; i < points * 2; i++) {
+      final angle = (i * math.pi / points) - math.pi / 2;
+      final r = i % 2 == 0 ? outer : inner;
+      final x = center.dx + r * math.cos(angle);
+      final y = center.dy + r * math.sin(angle);
+      
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {  
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    return path;
+  }
 }
 
 // utils/sky_utils.dart  ← ✅ PERFECT
 // - Contains LOGIC (how to color, size, describe objects)
 // - Pure functions, no state
 // - Reusable by painter, API, repository
+
+// 📍 GPS: lat=60.1187943, lon=19.9461192
+// 🌟 Sun (id:sun) magnitude: -26.74917
+// 🌟 Moon (id:moon) magnitude: -8.96246
+// 🌟 Mercury (id:mercury) magnitude: 0.78568
+// 🌟 Venus (id:venus) magnitude: -3.85289
+// 🌟 Mars (id:mars) magnitude: 1.18651
+// 🌟 Jupiter (id:jupiter) magnitude: -2.28169
+// 🌟 Saturn (id:saturn) magnitude: 0.78793
+// 🌟 Uranus (id:uranus) magnitude: 5.77124
+// 🌟 Neptune (id:neptune) magnitude: 7.95551
+// 🌟 Pluto (id:pluto) magnitude: 14.58575

@@ -64,6 +64,7 @@ class AstronomyApiService {
       final azimuth  = double.parse(position['azimuth']['degrees']);
       final altitude = double.parse(position['altitude']['degrees']);
       final magnitude = cell['extraInfo']['magnitude'];
+      // print("🌟 $name (id:$id) magnitude: $magnitude"); 
 
       result.add(CelestialObject(
         id:          id,
@@ -77,62 +78,7 @@ class AstronomyApiService {
             : null,
       ));
     }
-
     return result;
   }
-
-  // String _typeFor(String id) {
-  //   switch (id) {
-  //     case 'sun':   return 'star';
-  //     case 'moon':  return 'moon';
-  //     case 'pluto': return 'dwarf_planet';
-  //     default:      return 'planet';
-  //   }
-  // }
-
-  // String _descriptionFor(String id) {
-  //   const Map<String, String> descriptions = {
-  //     'sun':     'The star at the center of our Solar System.',
-  //     'moon':    'Earth\'s only natural satellite.',
-  //     'mercury': 'The smallest planet and closest to the Sun.',
-  //     'venus':   'The hottest planet. Brightest object in the night sky after the Moon.',
-  //     'mars':    'The Red Planet. Has the largest volcano in the Solar System.',
-  //     'jupiter': 'The largest planet. Has a giant storm called the Great Red Spot.',
-  //     'saturn':  'Known for its stunning ring system made of ice and rock.',
-  //     'uranus':  'An ice giant that rotates on its side.',
-  //     'neptune': 'The farthest planet. Has the strongest winds in the Solar System.',
-  //     'pluto':   'A dwarf planet in the Kuiper Belt.',
-  //   };
-  //   return descriptions[id] ?? '';
-  // }
-
-  // Future<void> debugApiResponse() async {
-  //   final now  = DateTime.now().toUtc();
-  //   final date = '${now.year}-'
-  //       '${now.month.toString().padLeft(2,'0')}-'
-  //       '${now.day.toString().padLeft(2,'0')}';
-  //   final time = '${now.hour.toString().padLeft(2,'0')}:'
-  //       '${now.minute.toString().padLeft(2,'0')}:00';
-
-  //   final uri = Uri.parse('$_baseUrl/bodies/positions').replace(
-  //     queryParameters: {
-  //       'latitude':  '60.1',
-  //       'longitude': '19.9',
-  //       'elevation': '10',
-  //       'from_date': date,
-  //       'to_date':   date,
-  //       'time':      time,
-  //     },
-  //   );
-
-  //   final response = await http.get(
-  //     uri,
-  //     headers: {HttpHeaders.authorizationHeader: _authHeader},
-  //   );
-
-  //   print('📡 Status: ${response.statusCode}');
-  //   print('📡 Raw body:');
-  //   print(const JsonEncoder.withIndent('  ').convert(json.decode(response.body)));
-  // }
 
 }

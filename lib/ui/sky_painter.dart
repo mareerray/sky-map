@@ -27,8 +27,10 @@ class SkyPainter extends CustomPainter {
     final double relativeAz = ((azimuth - phoneAzimuth) + 360) % 360;
     
     final double horizonY = size.height * 0.8;  // 80% down (562px), not 554px fixed
+    double relativeAlt = altitude - phoneAltitude;
+
     double x = (relativeAz / 360) * size.width;
-    double y = horizonY - (altitude / 90) * horizonY;
+    double y = horizonY - (relativeAlt / 90) * horizonY;
     
     // CLAMP - this fixes crowding!
     x = x.clamp(0.0, size.width - 1);
@@ -36,16 +38,6 @@ class SkyPainter extends CustomPainter {
     
     return Offset(x, y);
   }
-
-  // static Offset toScreen(double azimuth, double altitude, Size size, double phoneAzimuth, double phoneAltitude) {
-  //   // Key: relativeAzimuth = object azimuth MINUS phone azimuth
-  //   final double relativeAz = ((azimuth - phoneAzimuth) + 360) % 360;
-    
-  //   final double horizonY = size.height - 150;
-  //   final double x = (relativeAz / 360) * size.width;        // ← uses relativeAz!
-  //   final double y = horizonY - (altitude / 90) * horizonY;
-  //   return Offset(x, y);
-  // }
 
   // --------------- PAINTING LOGIC ----------------------------
   @override
@@ -81,7 +73,10 @@ class SkyPainter extends CustomPainter {
   // --------------- Draw Horizon ------------
 
   void _drawHorizon(Canvas canvas, Size size) {
-    final double horizonY = size.height - 160; // ← match the same value
+    final double horizonY = size.height * 0.8; // ← match the same value
+
+    // Only draw if phone near-flat (like real life!)
+    if (phoneAltitude > 20 || phoneAltitude < -20) return;  // Hide when tilted
     
     final linePaint = Paint()
       ..color = Colors.white24
@@ -115,7 +110,7 @@ class SkyPainter extends CustomPainter {
 
     // Loop your 6 constellations: ori, uma, cas, leo, cyg, gem
     for (final conEntry in constellationLines.entries) {
-      final conId = conEntry.key.toLowerCase();  // 'ori', 'uma' etc.
+      // final conId = conEntry.key.toLowerCase();  // 'ori', 'uma' etc.
       final lines = conEntry.value;
 
       for (final line in lines) {
@@ -133,7 +128,7 @@ class SkyPainter extends CustomPainter {
         if (star1 != null && star2 != null) {
           final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
           final pos2 = toScreen(star2.azimuth, star2.altitude, size, phoneAzimuth, phoneAltitude);
-          print('LINE ${star1.name}-${star2.name}: ${pos1.dx.toInt()},${pos1.dy.toInt()} → ${pos2.dx.toInt()},${pos2.dy.toInt()}');
+          // print('LINE ${star1.name}-${star2.name}: ${pos1.dx.toInt()},${pos1.dy.toInt()} → ${pos2.dx.toInt()},${pos2.dy.toInt()}');
 
           canvas.drawLine(pos1, pos2, linePaint);
           drawnLines++;
@@ -146,17 +141,33 @@ class SkyPainter extends CustomPainter {
 
   void _drawObjects(Canvas canvas, Size size) {
     for (final obj in objects) {
-      if (obj.type != 'constellation' && obj.altitude < -50) continue;  
-      // if (obj.type == 'constellation') continue; 
+      if (obj.type != 'constellation' && obj.altitude < -90) continue;  
 
       final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
 
+      // 🎇 PLANET GLOW FIRST (behind main dot)
+      final double dotSize = SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 1.0);
+      if (obj.type == 'moon' || (obj.type == 'planet' && (obj.magnitude ?? 1.0) < 2.0)) {
+        final glowPaint = Paint()
+          ..color = SkyUtils.colorForType(obj.type).withValues(alpha:0.3)  
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+        canvas.drawCircle(offset, dotSize * 2, glowPaint);  
+      }
+
+      // ⭐ MAIN DOT
       final Paint paint = Paint()
         ..color = SkyUtils.colorForType(obj.type)
         ..style = PaintingStyle.fill;
+      // Stars get pointy shape, others stay circle
+      if (obj.type == 'bright_star' || obj.type == 'star') {
+        final starPath = SkyUtils.starPath(offset, dotSize);
+        canvas.drawPath(starPath, paint);
+      } else {
+        canvas.drawCircle(offset, dotSize, paint);  // Planets/moon stay round
+      }
+      // canvas.drawCircle(offset, SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 1.0), paint);
 
-      canvas.drawCircle(offset, SkyUtils.sizeForType(obj.type), paint);
-
+      // 🏷️ LABELS (planets/constellations always, others when selected)
       final bool alwaysShowLabel = obj.type == 'sun'         ||
                                   obj.type == 'moon'         ||
                                   obj.type == 'planet'       ||
@@ -180,7 +191,7 @@ class SkyPainter extends CustomPainter {
 
         textPainter.paint(
           canvas,
-          Offset(offset.dx - textPainter.width / 2, offset.dy + SkyUtils.sizeForType(obj.type) + 1),
+          Offset(offset.dx - textPainter.width / 2, offset.dy + SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 1.0) + 1),
         );
       }
     }
