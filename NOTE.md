@@ -168,9 +168,22 @@ The data comes from real sources: Hipparcos, Yale Bright Star, and Gliese catalo
 Your teacher's checklist even says: "If the data comes from a file, check its validity" — HYG is absolutely defensible when your teacher asks
 
 
-## Think of your phone screen facing you in portrait mode:
+## Expected Results
+Phone position	az value	Altitude
+Upright portrait	~0	~0° (horizon) ✅
+Tilted back toward sky	becomes negative	positive degrees ✅
+Flat on table screen up	~-9.8	~+90° ✅
 
-Phone action	ay value	Before fix	After fix (-ay)
-Tilt up	becomes negative	altitude goes down ❌	altitude goes up ✅
-Tilt down	becomes positive	altitude goes up ❌	altitude goes down ✅
-Flat on table	near zero	0°	0° ✅
+🌟 Visible right now (alt > 0°):
+  Moon      az:233° (SW)   alt:+49° ↑
+  Jupiter   az:216° (SW)   alt:+49° ↑  
+  Uranus    az:267° (W)    alt:+24° ↑
+
+🌟 Below horizon (alt < 0°):
+  Sun       az:304° (NW)   alt:-15° ↓
+  Venus     az:291° (WNW)  alt:-1° ↓  (almost visible!)
+  Mercury   az:324° (NNW)  alt:-33° ↓
+  Mars      az:315° (NW)   alt:-28° ↓
+  Saturn    az:302° (NW)   alt:-17° ↓
+  Neptune   az:305° (NW)   alt:-18° ↓
+  Pluto     az:4° (N)      alt:-52° ↓

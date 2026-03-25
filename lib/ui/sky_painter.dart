@@ -12,7 +12,7 @@ class SkyPainter extends CustomPainter {
   final double phoneAzimuth;
   final double phoneAltitude;
 
-  static const double fov = 40.0;
+  static const double fov = 60.0;
 
   SkyPainter({
     required this.objects, 
@@ -51,23 +51,6 @@ class SkyPainter extends CustomPainter {
     return Offset(x, y);
   }
 
-  // static Offset? toScreen(double azimuth, double altitude, Size size,
-  //   double phoneAzimuth, double phoneAltitude) {
-
-  //   double deltaAz  = ((azimuth - phoneAzimuth) + 540) % 360 - 180;
-  //   double deltaAlt = altitude - phoneAltitude;
-
-  //   // Skip objects outside the field of view
-  //   if (deltaAz.abs()  > fov / 2) return null;
-  //   if (deltaAlt.abs() > fov / 2) return null;
-
-  //   double x = (deltaAz  / fov + 0.5) * size.width;
-  //   double y = (0.5 + deltaAlt / fov) * size.height;
-
-  //   return Offset(x, y);
-  // }
-
-
   // --------------- PAINTING LOGIC ----------------------------
   @override
   void paint(Canvas canvas, Size size) {
@@ -78,36 +61,45 @@ class SkyPainter extends CustomPainter {
     _drawCompass(canvas, size);
   }
 
-  // --------------- Draw Background ------------
-
+    // --------------- Draw Background ------------
   void _drawBackground(Canvas canvas, Size size) {
+    // Dynamic horizon (0° = horizon line)
+    final double horizonY = (0.5 + phoneAltitude / 60.0) * size.height;
+    
+    // Sky gradient (always top to horizon)
+    final skyGradient = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.center,
+      colors: [Color(0xFF02040F), Color(0xFF0a0a1e)], // space → horizon edge
+    );
 
-    final paint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Color(0xFF02040F),
-          Color(0xFF000000),
-        ],
-        // colors: [
-        //   Color(0xFF000000),
-        //   Color(0xFF000510),
-        // ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    // DARKER gradient ground — from horizon to bottom
+    final groundGradient = LinearGradient(
+      begin: Alignment.center,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0xFF0a0a1e),  // Very dark blue at horizon
+        Color(0xFF08101a),  // Darker blue 
+        Color(0xFF000000),  // Pure black bottom
+      ],
+      stops: const [0.0, 0.6, 1.0],
+    );
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
+    // Sky: top → horizon
+    final skyPaint = Paint()
+      ..shader = skyGradient.createShader(Rect.fromLTWH(0, 0, size.width, horizonY));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, horizonY), skyPaint);
+
+    // Ground: horizon → bottom (covers all negative alt objects)
+    final groundPaint = Paint()
+      ..shader = groundGradient.createShader(Rect.fromLTWH(0, horizonY, size.width, size.height));
+    canvas.drawRect(Rect.fromLTWH(0, horizonY, size.width, size.height), groundPaint);
   }
 
   // --------------- Draw Horizon ------------
 
   void _drawHorizon(Canvas canvas, Size size) {
-    final double horizonY = (0.5 + phoneAltitude / fov) * size.height; // ✅ moves with tilt
-    // final double horizonY = size.height * 0.5;
-    // final double horizonY = size.height * 0.8; // ← match the same value
-
-    // Only draw if phone near-flat (like real life!)
-    // if (phoneAltitude > 20 || phoneAltitude < -20) return;  // Hide when tilted
+    final double horizonY = (0.5 + phoneAltitude / fov) * size.height; // moves with tilt
     
     final linePaint = Paint()
       ..color = Colors.white24
@@ -285,3 +277,4 @@ class SkyPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
+

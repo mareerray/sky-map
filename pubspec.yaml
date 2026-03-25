@@ -68,6 +68,7 @@ flutter:
   assets:
       - assets/hygdata_v42.csv
       - assets/constellation_lines.json
+      - assets/images/
       - .env
   #   - images/a_dot_ham.jpeg
 

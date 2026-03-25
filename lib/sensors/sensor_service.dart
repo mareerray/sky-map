@@ -54,7 +54,7 @@ class SensorService {
     final ay = _accelerometer[1];
     final az = _accelerometer[2];
     // 👇 Add this temporarily
-    print('📱 ax=${ ax.toStringAsFixed(1)} ay=${ay.toStringAsFixed(1)} az=${az.toStringAsFixed(1)}');
+    // print('📱 ax=${ ax.toStringAsFixed(1)} ay=${ay.toStringAsFixed(1)} az=${az.toStringAsFixed(1)}');
     final mx = _magnetometer[0];
     final my = _magnetometer[1];
     final mz = _magnetometer[2];
@@ -62,9 +62,10 @@ class SensorService {
     // Altitude — how much you tilt the phone up/down
     // Works correctly when holding phone upright (portrait mode)
     final double altitude = math.atan2(
-      -ay,                          
-      math.sqrt(az * az + ax * ax), 
+      -az,                           // Z changes when tilting toward sky
+      math.sqrt(ax * ax + ay * ay),  // XY plane = base
     ) * (180 / math.pi);
+
 
     // Normalize accelerometer to get gravity direction
     final double accNorm = math.sqrt(ax*ax + ay*ay + az*az);
@@ -73,16 +74,18 @@ class SensorService {
     final double azN = az / accNorm;
 
     // Tilt-compensated magnetic North components
-    final double pitch = math.asin(-axN);
-    final double roll  = math.asin(ayN / math.cos(pitch));
+    final double pitch = math.asin((-axN).clamp(-1.0, 1.0));
+    // final double roll  = math.asin(ayN / math.cos(pitch));
+    final double cosP = math.cos(pitch);
+    final double sinRoll = (cosP.abs() < 0.001) ? 0.0 : (ayN / cosP).clamp(-1.0, 1.0);
+    final double roll = math.asin(sinRoll);
 
-    final double magX = mx * math.cos(pitch)
-                      + mz * math.sin(pitch);
+    final double magX = mx * math.cos(pitch) + mz * math.sin(pitch);
     final double magY = mx * math.sin(roll) * math.sin(pitch)
                       + my * math.cos(roll)
                       - mz * math.sin(roll) * math.cos(pitch);
 
-    double azimuth = math.atan2(-magY, magX) * (180 / math.pi);
+    double azimuth = math.atan2(magY, magX) * (180 / math.pi);
     azimuth = (azimuth + 360) % 360; // normalize to 0-360
 
     // // Calculate azimuth (compass direction)
@@ -94,21 +97,22 @@ class SensorService {
     // azimuth = (azimuth + 180) % 360; // normalize to 0-360
 
     // Smooth it out
-    _smoothAzimuth  = _alpha * azimuth  + (1 - _alpha) * _smoothAzimuth;
+    double azDelta = ((azimuth - _smoothAzimuth) + 540) % 360 - 180; // finds the shortest path between two angles
+    _smoothAzimuth = (_smoothAzimuth + _alpha * azDelta + 360) % 360;    
     _smoothAltitude = _alpha * altitude + (1 - _alpha) * _smoothAltitude;
 
     // ✅ FIX: Only emit if something changed more than 1 degree
     final azDiff  = (_smoothAzimuth  - _lastEmittedAzimuth).abs();
     final altDiff = (_smoothAltitude - _lastEmittedAltitude).abs();
 
-    if (azDiff > 3.5 || altDiff >3.5) {
+    if (azDiff > 2.5 || altDiff >2.5) {
       _lastEmittedAzimuth  = _smoothAzimuth;
       _lastEmittedAltitude = _smoothAltitude;
 
       // print('📡 Sensor update: az=$azimuth alt=$altitude'); 
       _controller.add(SensorData(
         azimuth: _smoothAzimuth, 
-        altitude: _smoothAltitude + 90.0, // Adjust so 0° = horizon, +90° = straight up
+        altitude: _smoothAltitude, // Adjust so 0° = horizon, +90° = straight up
       ));
     }
   }

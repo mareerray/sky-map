@@ -49,6 +49,11 @@ class AstronomyApiService {
     }
 
     final data = json.decode(response.body);
+    // print('🌙 API Moon: ${data['data']['table']['rows'].where((r) => r['entry']['id'] == 'moon').map((r) => {
+    //   'az': r['cells'][0]['position']['horizontal']['azimuth']['degrees'],
+    //   'alt': r['cells'][0]['position']['horizontal']['altitude']['degrees']
+    // }).toList()}');
+
     final rows = data['data']['table']['rows'] as List;
     final List<CelestialObject> result = [];
 
@@ -77,8 +82,15 @@ class AstronomyApiService {
             ? double.tryParse(magnitude.toString())
             : null,
       ));
-    }
+    }      // Add this after result.add() loop
+      print('🌟 API Objects (${result.length}):');
+      for (final obj in result) {
+        print('  ${obj.name.padRight(12)} az:${obj.azimuth.toStringAsFixed(0).padRight(5)} alt:${obj.altitude.toStringAsFixed(0).padRight(4)} mag:${obj.magnitude?.toStringAsFixed(1) ?? "--"}');
+      }
+      print('');
+
     return result;
+    
   }
 
 }

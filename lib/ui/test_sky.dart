@@ -9,7 +9,7 @@ import '../ui/sky_painter.dart';
 class TestSkyScreen extends StatefulWidget {
   const TestSkyScreen({super.key});
   @override
-   State <TestSkyScreen> createState() => _TestSkyScreenState();
+  State <TestSkyScreen> createState() => _TestSkyScreenState();
 }
 
 class _TestSkyScreenState extends State<TestSkyScreen> {
