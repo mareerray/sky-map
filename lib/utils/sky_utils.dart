@@ -10,7 +10,8 @@ class SkyUtils {
       case 'planet': return const Color(0xFF4FC3F7);  // Cyan
       case 'moon': return const Color(0xFFE8E8D0);    // Cream
       case 'sun': return const Color(0xFFD46464);
-      case 'constellation': return const Color(0xFF5C6BC0); // Indigo
+      case 'constellation': return const Color(0xFFCDA882); // Indigo
+      // case 'constellation': return const Color(0xFF5C6BC0); // Indigo
       case 'background_star': return Colors.white.withValues(alpha:0.6);
       case 'dwarf_planet': return const Color(0xFFE18E3A);  // Brown
       default: return Colors.white.withValues(alpha:0.7);
@@ -20,14 +21,14 @@ class SkyUtils {
   // 📏 Sizes for each celestial type
   static double sizeForType(String type, {required double magnitude}) {
     switch (type) {
-      case 'star': return 4;
-      case 'bright_star': return 4;
-      case 'planet': return 6;
-      case 'moon': return 8;
-      case 'sun': return 15;
-      case 'dwarf_planet': return 4;
-      case 'bg_star':     return 1.0; 
-      default: return 2;
+      case 'star': return 7;
+      case 'bright_star': return 7;
+      case 'planet': return 10;
+      case 'moon': return 14;
+      case 'sun': return 18;
+      case 'dwarf_planet': return 8;
+      case 'bg_star':     return 3; 
+      default: return 3;
     }
   }
 

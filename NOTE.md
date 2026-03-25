@@ -166,3 +166,11 @@ It is a well-known, scientifically accurate star catalog used by astronomers and
 The data comes from real sources: Hipparcos, Yale Bright Star, and Gliese catalogs
 
 Your teacher's checklist even says: "If the data comes from a file, check its validity" — HYG is absolutely defensible when your teacher asks
+
+
+## Think of your phone screen facing you in portrait mode:
+
+Phone action	ay value	Before fix	After fix (-ay)
+Tilt up	becomes negative	altitude goes down ❌	altitude goes up ✅
+Tilt down	becomes positive	altitude goes up ❌	altitude goes down ✅
+Flat on table	near zero	0°	0° ✅

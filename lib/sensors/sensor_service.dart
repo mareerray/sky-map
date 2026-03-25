@@ -53,6 +53,8 @@ class SensorService {
     final ax = _accelerometer[0];
     final ay = _accelerometer[1];
     final az = _accelerometer[2];
+    // 👇 Add this temporarily
+    print('📱 ax=${ ax.toStringAsFixed(1)} ay=${ay.toStringAsFixed(1)} az=${az.toStringAsFixed(1)}');
     final mx = _magnetometer[0];
     final my = _magnetometer[1];
     final mz = _magnetometer[2];
@@ -60,18 +62,36 @@ class SensorService {
     // Altitude — how much you tilt the phone up/down
     // Works correctly when holding phone upright (portrait mode)
     final double altitude = math.atan2(
-      ay,                          
-      math.sqrt(ax * ax + az * az), 
+      -ay,                          
+      math.sqrt(az * az + ax * ax), 
     ) * (180 / math.pi);
 
+    // Normalize accelerometer to get gravity direction
+    final double accNorm = math.sqrt(ax*ax + ay*ay + az*az);
+    final double axN = ax / accNorm;
+    final double ayN = ay / accNorm;
+    final double azN = az / accNorm;
 
-    // Calculate azimuth (compass direction)
-    // East vector = magnetometer cross accelerometer
-    final ex = ay * mz - az * my;
-    final ey = az * mx - ax * mz;
+    // Tilt-compensated magnetic North components
+    final double pitch = math.asin(-axN);
+    final double roll  = math.asin(ayN / math.cos(pitch));
 
-    double azimuth = math.atan2(ey, ex) * (180 / math.pi);
-    azimuth = (azimuth + 180) % 360; // normalize to 0-360
+    final double magX = mx * math.cos(pitch)
+                      + mz * math.sin(pitch);
+    final double magY = mx * math.sin(roll) * math.sin(pitch)
+                      + my * math.cos(roll)
+                      - mz * math.sin(roll) * math.cos(pitch);
+
+    double azimuth = math.atan2(-magY, magX) * (180 / math.pi);
+    azimuth = (azimuth + 360) % 360; // normalize to 0-360
+
+    // // Calculate azimuth (compass direction)
+    // // East vector = magnetometer cross accelerometer
+    // final ex = ay * mz - az * my;
+    // final ey = az * mx - ax * mz;
+
+    // double azimuth = math.atan2(ey, ex) * (180 / math.pi);
+    // azimuth = (azimuth + 180) % 360; // normalize to 0-360
 
     // Smooth it out
     _smoothAzimuth  = _alpha * azimuth  + (1 - _alpha) * _smoothAzimuth;
@@ -81,12 +101,14 @@ class SensorService {
     final azDiff  = (_smoothAzimuth  - _lastEmittedAzimuth).abs();
     final altDiff = (_smoothAltitude - _lastEmittedAltitude).abs();
 
-    if (azDiff > 2.5 || altDiff > 2.5) {
+    if (azDiff > 3.5 || altDiff >3.5) {
       _lastEmittedAzimuth  = _smoothAzimuth;
       _lastEmittedAltitude = _smoothAltitude;
 
       // print('📡 Sensor update: az=$azimuth alt=$altitude'); 
-      _controller.add(SensorData(azimuth: _smoothAzimuth, altitude: _smoothAltitude
+      _controller.add(SensorData(
+        azimuth: _smoothAzimuth, 
+        altitude: _smoothAltitude + 90.0, // Adjust so 0° = horizon, +90° = straight up
       ));
     }
   }

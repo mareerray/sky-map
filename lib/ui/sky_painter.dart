@@ -12,7 +12,7 @@ class SkyPainter extends CustomPainter {
   final double phoneAzimuth;
   final double phoneAltitude;
 
-  static const double fov = 120.0;
+  static const double fov = 40.0;
 
   SkyPainter({
     required this.objects, 
@@ -23,21 +23,50 @@ class SkyPainter extends CustomPainter {
   });
 
   // Static method — used by both painter and sky_screen.dart
-  static Offset toScreen(double azimuth, double altitude, Size size, double phoneAzimuth, double phoneAltitude) {
-    final double relativeAz = ((azimuth - phoneAzimuth) + 360) % 360;
-    
-    final double horizonY = size.height * 0.8;  // 80% down (562px), not 554px fixed
-    double relativeAlt = altitude - phoneAltitude;
+  static Offset? toScreen(
+    double azimuth,
+    double altitude,
+    Size size,
+    double phoneAzimuth,
+    double phoneAltitude,
+  ) {
+    // Horizontal offset
+    final double deltaAz = ((azimuth - phoneAzimuth) + 540) % 360 - 180;
 
-    double x = (relativeAz / 360) * size.width;
-    double y = horizonY - (relativeAlt / 90) * horizonY;
-    
-    // CLAMP - this fixes crowding!
-    x = x.clamp(0.0, size.width - 1);
-    y = y.clamp(0.0, size.height - 1);
-    
+    // Vertical offset
+    final double deltaAlt = altitude - phoneAltitude;
+
+    // Cull outside FOV
+    if (deltaAz.abs() > fov / 2) return null;
+    if (deltaAlt.abs() > fov / 2) return null;
+
+    // Map to screen
+    final double x = (deltaAz / fov + 0.5) * size.width;
+
+    // IMPORTANT: if altitude increases when you tilt up,
+    // then objects ABOVE where you point have deltaAlt > 0
+    // they should appear ABOVE the center → y smaller.
+    final double y = (0.5 - deltaAlt / fov) * size.height;
+
     return Offset(x, y);
   }
+
+  // static Offset? toScreen(double azimuth, double altitude, Size size,
+  //   double phoneAzimuth, double phoneAltitude) {
+
+  //   double deltaAz  = ((azimuth - phoneAzimuth) + 540) % 360 - 180;
+  //   double deltaAlt = altitude - phoneAltitude;
+
+  //   // Skip objects outside the field of view
+  //   if (deltaAz.abs()  > fov / 2) return null;
+  //   if (deltaAlt.abs() > fov / 2) return null;
+
+  //   double x = (deltaAz  / fov + 0.5) * size.width;
+  //   double y = (0.5 + deltaAlt / fov) * size.height;
+
+  //   return Offset(x, y);
+  // }
+
 
   // --------------- PAINTING LOGIC ----------------------------
   @override
@@ -73,14 +102,16 @@ class SkyPainter extends CustomPainter {
   // --------------- Draw Horizon ------------
 
   void _drawHorizon(Canvas canvas, Size size) {
-    final double horizonY = size.height * 0.8; // ← match the same value
+    final double horizonY = (0.5 + phoneAltitude / fov) * size.height; // ✅ moves with tilt
+    // final double horizonY = size.height * 0.5;
+    // final double horizonY = size.height * 0.8; // ← match the same value
 
     // Only draw if phone near-flat (like real life!)
-    if (phoneAltitude > 20 || phoneAltitude < -20) return;  // Hide when tilted
+    // if (phoneAltitude > 20 || phoneAltitude < -20) return;  // Hide when tilted
     
     final linePaint = Paint()
       ..color = Colors.white24
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 2.0;
 
     canvas.drawLine(Offset(0, horizonY), Offset(size.width, horizonY), linePaint);
 
@@ -101,7 +132,7 @@ class SkyPainter extends CustomPainter {
     // print('🔍 Drawing ${constellationLines.length} JSON constellations...');
 
     final linePaint = Paint()
-      ..color = const Color(0xFF5C6BC0) 
+      ..color = const Color(0xFFCDA882) 
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1);
@@ -130,6 +161,7 @@ class SkyPainter extends CustomPainter {
           final pos2 = toScreen(star2.azimuth, star2.altitude, size, phoneAzimuth, phoneAltitude);
           // print('LINE ${star1.name}-${star2.name}: ${pos1.dx.toInt()},${pos1.dy.toInt()} → ${pos2.dx.toInt()},${pos2.dy.toInt()}');
 
+          if (pos1 == null || pos2 == null) continue;
           canvas.drawLine(pos1, pos2, linePaint);
           drawnLines++;
         }
@@ -141,9 +173,10 @@ class SkyPainter extends CustomPainter {
 
   void _drawObjects(Canvas canvas, Size size) {
     for (final obj in objects) {
-      if (obj.type != 'constellation' && obj.altitude < -90) continue;  
+      // if (obj.type != 'constellation' && obj.altitude < -90) continue;  
 
       final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
+      if (offset == null) continue; 
 
       // 🎇 PLANET GLOW FIRST (behind main dot)
       final double dotSize = SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 1.0);

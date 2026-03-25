@@ -181,8 +181,8 @@ class CelestialRepository {
       
       final Set<String> starNames = {};
       for (final line in conLines) {
-        starNames.add(line[0] as String);
-        if (line.length > 1) starNames.add(line[1] as String);
+        starNames.add(line[0]);
+        if (line.length > 1) starNames.add(line[1]);
       }
       
       double totalAz = 0, totalAlt = 0;

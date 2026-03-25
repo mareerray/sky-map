@@ -38,6 +38,7 @@ class _SkyScreenState extends State<SkyScreen> {
       final offset = SkyPainter.toScreen(
         obj.azimuth, obj.altitude, size, 
         phoneAzimuth, phoneAltitude); 
+      if (offset == null) continue;
       final double distance = (offset - Offset(tapX, tapY)).distance;
 
       if (distance < nearestDistance) {
@@ -94,12 +95,12 @@ class _SkyScreenState extends State<SkyScreen> {
                         children: [
                           Text(
                             'Az: ${state.phoneAzimuth.toStringAsFixed(0)}°',
-                            style: GoogleFonts.poppins(color: Colors.cyan, fontSize: 14),
+                            style: GoogleFonts.poppins(color: Color(0xFF4FC3F7), fontSize: 16),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Alt: ${state.phoneAltitude.toStringAsFixed(0)}°',
-                            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
                           ),
                         ],
                       ),
@@ -127,7 +128,7 @@ class _SkyScreenState extends State<SkyScreen> {
                 return Stack(
                   children: [
 
-                    // Sky canvas with tap detectionr
+                    // Sky canvas with tap detection
                     GestureDetector(
                       onTapUp: (details) =>
                           _onTap(details, state.celestialObjects, size, state.phoneAzimuth, state.phoneAltitude),
