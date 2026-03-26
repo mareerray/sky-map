@@ -36,6 +36,7 @@ class CelestialRepository {
     final constellationLines = await loadConstellationLines();
     final groupedObjects = _groupStarsByConstellation(starObjects, constellationLines);
 
+    // Return SkyLoaded exactly like your state expects
     return [...realObjects, ...groupedObjects, ...starObjects];
   }
 
@@ -48,7 +49,7 @@ class CelestialRepository {
     final List<CelestialObject> stars = [];
     int processed = 0;
 
-    for (int i = 1; i < lines.length && processed < 50000; i++) {
+    for (int i = 1; i < lines.length && processed < 15000; i++) {
       final line = lines[i].trim();
       if (line.isEmpty || !line.contains(',')) continue;
 
@@ -65,16 +66,11 @@ class CelestialRepository {
         if (!_constellations.contains(con)) continue;
 
         // 🆕 Tiered brightness filtering
-        if (mag > 3.0) continue; // Only stars brighter than mag 3.0
+        // if (mag > 4.5) continue; // Only stars brighter than mag 4.5
+        // Repository: special case important stars
+        if (mag > 4.0 && !['saiph', 'merak', 'phecda'].contains(name.toLowerCase())) continue;
 
-        String starType = 'star';
-        if (mag <= 1.5) {
-          starType = 'bright_star'; // Very bright
-        } else if (mag <= 2.5) {
-          starType = 'star'; // Normal stars
-        } else {
-          starType = 'bg_star'; // Fainter stars as background
-        }
+        final starType = 'star';
 
         final coords = astro.getStarHorizontal(raHours: raDeg / 15.0, decDeg: decDeg);
 
@@ -95,8 +91,10 @@ class CelestialRepository {
         // Skip bad rows
       }
     }
-
-    // print('⭐ Loaded ${stars.length} constellation stars from CSV');
+    print('ALL STARS LOADED (${stars.length}):');
+    for (var star in stars.take(20)) {  // First 20
+      print('  ${star.name} (${star.description}) alt=${star.altitude}');
+    }
     return stars;
   }
 
@@ -170,12 +168,12 @@ class CelestialRepository {
     
     // Full names
     final fullNames = {
-      'ori': 'Orion',
-      'uma': 'Ursa Major',
-      'cas': 'Cassiopeia', 
-      'leo': 'Leo',
-      'cyg': 'Cygnus',
-      'gem': 'Gemini',
+      'ori': 'ORION',
+      'uma': 'URSA MAJOR',
+      'cas': 'CASSIOPEIA', 
+      'leo': 'LEO',
+      'cyg': 'CYGNUS',
+      'gem': 'GEMINI',
     };
     
     for (final entry in conData.entries) {

@@ -14,6 +14,8 @@ class SkyPainter extends CustomPainter {
 
   static const double fov = 60.0;
 
+  int _lastObjectCount = 0;
+
   SkyPainter({
     required this.objects, 
     this.selectedObject, 
@@ -55,10 +57,21 @@ class SkyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // ✅ Print ONCE when stars change
+    if (objects.isNotEmpty && _lastObjectCount != objects.length) {
+      _lastObjectCount = objects.length;
+      print('🌟 Total stars: ${objects.where((o) => o.type == "star").length}');
+      print('Found Betelgeuse: ${objects.any((o) => o.name.toLowerCase().contains("betelgeuse"))}');
+      print('Found Alnitak: ${objects.any((o) => o.name.toLowerCase().contains("alnitak"))}');
+      print('Found Rigel: ${objects.any((o) => o.name.toLowerCase().contains("rigel"))}');
+      print('Found Dubhe: ${objects.any((o) => o.name.toLowerCase().contains("dubhe"))}');
+    }
+
     _drawBackground(canvas, size);
     _drawHorizon(canvas, size);
     _drawConstellationLines(canvas, size);
     _drawObjects(canvas, size);
+    _drawConstellationLabels(canvas, size);
     _drawCompass(canvas, size);
   }
 
@@ -125,10 +138,11 @@ class SkyPainter extends CustomPainter {
   void _drawConstellationLines(Canvas canvas, Size size) {
     final linePaint = Paint()
       ..color = const Color(0xFFCDA882) 
-      ..strokeWidth = 0.5
+      ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 0.5);
 
+    // // print('🎨 Constellations: ${constellationLines.keys}');  // Debug
 
     // Loop the constellations from JSON
     for (final conEntry in constellationLines.entries) {
@@ -142,18 +156,34 @@ class SkyPainter extends CustomPainter {
 
         // Flexible name match (handles gamma_cas → cih)
         final star1 = objects.firstWhereOrNull((obj) => 
-          obj.name.toLowerCase().contains(star1Name) && obj.altitude > -5);
+          obj.name.toLowerCase().contains(star1Name));
+         if (star1 == null) {
+    print('❌ MISSING STAR: $star1Name in ${conEntry.key}');
+  }
         final star2 = objects.firstWhereOrNull((obj) => 
-          obj.name.toLowerCase().contains(star2Name) && obj.altitude > -5);
+          obj.name.toLowerCase().contains(star2Name));
+         if (star2 == null) {
+    print('❌ MISSING STAR: $star2Name in ${conEntry.key}');
+  }
+
+        // print('Line $star1Name-$star2Name → found: ${star1?.name}, ${star2?.name}');
 
         if (star1 != null && star2 != null) {
           final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
           final pos2 = toScreen(star2.azimuth, star2.altitude, size, phoneAzimuth, phoneAltitude);
-          // print('LINE ${star1.name}-${star2.name}: ${pos1.dx.toInt()},${pos1.dy.toInt()} → ${pos2.dx.toInt()},${pos2.dy.toInt()}');
-
-          if (pos1 == null || pos2 == null) continue;
-          canvas.drawLine(pos1, pos2, linePaint);
-        }
+          
+          if (pos1 != null && pos2 != null) {
+            canvas.drawLine(pos1, pos2, linePaint);
+          }
+          // // Draw EVEN if one off-screen (partial lines!)
+          // if (pos1 != null || pos2 != null) {
+          //   Offset drawPos1 = pos1 ?? Offset(size.width/2, size.height/2);  // Center fallback
+          //   Offset drawPos2 = pos2 ?? Offset(size.width/2, size.height/2);
+            
+          //   canvas.drawLine(drawPos1, drawPos2, linePaint);
+          //   // print('Drew partial line: ${star1.name}→${star2.name}');
+          // }
+        }      
       }
     }
   }
@@ -181,7 +211,7 @@ class SkyPainter extends CustomPainter {
         ..color = SkyUtils.colorForType(obj.type)
         ..style = PaintingStyle.fill;
       // Stars get pointy shape, others stay circle
-      if (obj.type == 'bright_star' || obj.type == 'star') {
+      if (obj.type == 'star') {
         final starPath = SkyUtils.starPath(offset, dotSize);
         canvas.drawPath(starPath, paint);
       } else {
@@ -193,7 +223,7 @@ class SkyPainter extends CustomPainter {
                                   obj.type == 'moon'         ||
                                   obj.type == 'planet'       ||
                                   obj.type == 'dwarf_planet' ||
-                                  obj.type == 'constellation'; // ← add this
+                                  obj.type == 'constellation'; 
 
       final bool isSelected = selectedObject != null && selectedObject!.id == obj.id;
 
@@ -217,6 +247,56 @@ class SkyPainter extends CustomPainter {
       }
     }
   }
+
+  // --------------- Draw Constellation labels (optional) ------------
+
+  void _drawConstellationLabels(Canvas canvas, Size size) {
+  final labelStyle = GoogleFonts.poppins(
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+    color: const Color(0xFFCDA882),
+  );
+
+  final constName = {'ori': 'Orion', 'uma': 'Ursa Major'};
+
+  for (final entry in constName.entries) {
+    final acronym = entry.key;
+    final fullName = entry.value;
+
+    final targetStarName = {'ori': 'betelgeuse', 'uma': 'dubhe'}[acronym];
+
+    if (targetStarName == null) continue;
+
+    final star = objects.firstWhereOrNull(
+      (obj) => obj.name.toLowerCase().contains(targetStarName) && obj.altitude > -5,
+    );
+
+    if (star == null) continue;
+
+    final pos = toScreen(
+      star.azimuth,
+      star.altitude,
+      size,
+      phoneAzimuth,
+      phoneAltitude,
+    );
+
+    if (pos == null) continue;
+
+    final textPainter = TextPainter(
+      text: TextSpan(text: fullName, style: labelStyle),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    textPainter.paint(
+      canvas,
+      Offset(
+        pos.dx - textPainter.width / 2,
+        pos.dy - textPainter.height,
+      ),
+    );
+  }
+}
 
   // --------------- Draw Compass ------------
 
