@@ -187,3 +187,25 @@ Flat on table screen up	~-9.8	~+90° ✅
   Saturn    az:302° (NW)   alt:-17° ↓
   Neptune   az:305° (NW)   alt:-18° ↓
   Pluto     az:4° (N)      alt:-52° ↓
+
+
+
+
+Tips: 
+Open settings.json directly
+Press Ctrl + Shift + P on your keyboard (this opens the Command Palette — a search bar at the top of VS Code)
+
+Type: Open User Settings JSON
+
+Then paste this inside the file
+
+Click the option that says "Preferences: Open User Settings (JSON)"
+```
+    "workbench.colorCustomizations": {
+        "terminal.background": "#1e1e1e",
+        "terminal.foreground": "#f0cce8"
+    },
+```
+```
+print('\x1b[36m📍 GPS: lat=${position.latitude}, lon=${position.longitude}\x1b[0m');
+```

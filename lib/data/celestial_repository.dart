@@ -23,8 +23,7 @@ class CelestialRepository {
       latDeg: position.latitude, 
       lonDeg: position.longitude
     );
-    print('📍 GPS: lat=${position.latitude}, lon=${position.longitude}');
-
+    print('\x1b[36m📍 GPS: lat=${position.latitude}, lon=${position.longitude}\x1b[0m');
     // 2️⃣ Real positions from AstronomyAPI using GPS
     final List<CelestialObject> realObjects = await _api.fetchBodies(
       latitude:  position.latitude,

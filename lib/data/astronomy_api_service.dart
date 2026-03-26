@@ -69,7 +69,6 @@ class AstronomyApiService {
       final azimuth  = double.parse(position['azimuth']['degrees']);
       final altitude = double.parse(position['altitude']['degrees']);
       final magnitude = cell['extraInfo']['magnitude'];
-      // print("🌟 $name (id:$id) magnitude: $magnitude"); 
 
       result.add(CelestialObject(
         id:          id,
@@ -81,16 +80,17 @@ class AstronomyApiService {
         magnitude:   magnitude != null
             ? double.tryParse(magnitude.toString())
             : null,
-      ));
-    }      // Add this after result.add() loop
-      print('🌟 API Objects (${result.length}):');
+        ));
+      } 
+
+      final timestamp = now.toLocal().toString().split('.')[0];  // e.g. "2026-03-26 15:08:45"
+      print('\x1b[36m🌟 API Objects (${result.length}) [$timestamp]:\x1b[0m');
       for (final obj in result) {
-        print('  ${obj.name.padRight(12)} az:${obj.azimuth.toStringAsFixed(0).padRight(5)} alt:${obj.altitude.toStringAsFixed(0).padRight(4)} mag:${obj.magnitude?.toStringAsFixed(1) ?? "--"}');
+        print('\x1b[36m  ${obj.name.padRight(12)} az:${obj.azimuth.toStringAsFixed(0).padRight(5)} alt:${obj.altitude.toStringAsFixed(0).padRight(4)} (mag:${obj.magnitude?.toStringAsFixed(1) ?? "--"})\x1b[0m');
       }
       print('');
 
     return result;
-    
   }
 
 }
