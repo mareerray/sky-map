@@ -52,6 +52,7 @@ class SkyPainter extends CustomPainter {
   }
 
   // --------------- PAINTING LOGIC ----------------------------
+
   @override
   void paint(Canvas canvas, Size size) {
     _drawBackground(canvas, size);
@@ -62,6 +63,7 @@ class SkyPainter extends CustomPainter {
   }
 
     // --------------- Draw Background ------------
+
   void _drawBackground(Canvas canvas, Size size) {
     // Dynamic horizon (0° = horizon line)
     final double horizonY = (0.5 + phoneAltitude / 60.0) * size.height;
@@ -121,19 +123,15 @@ class SkyPainter extends CustomPainter {
   // --------------- Draw Constellation Lines from JSON ------------
 
   void _drawConstellationLines(Canvas canvas, Size size) {
-    // print('🔍 Drawing ${constellationLines.length} JSON constellations...');
-
     final linePaint = Paint()
       ..color = const Color(0xFFCDA882) 
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1);
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 0.5);
 
-    int drawnLines = 0;
 
-    // Loop your 6 constellations: ori, uma, cas, leo, cyg, gem
+    // Loop the constellations from JSON
     for (final conEntry in constellationLines.entries) {
-      // final conId = conEntry.key.toLowerCase();  // 'ori', 'uma' etc.
       final lines = conEntry.value;
 
       for (final line in lines) {
@@ -144,9 +142,9 @@ class SkyPainter extends CustomPainter {
 
         // Flexible name match (handles gamma_cas → cih)
         final star1 = objects.firstWhereOrNull((obj) => 
-          obj.name.toLowerCase() == star1Name && obj.altitude > 0);
+          obj.name.toLowerCase().contains(star1Name) && obj.altitude > -5);
         final star2 = objects.firstWhereOrNull((obj) => 
-          obj.name.toLowerCase() == star2Name && obj.altitude > 0);
+          obj.name.toLowerCase().contains(star2Name) && obj.altitude > -5);
 
         if (star1 != null && star2 != null) {
           final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
@@ -155,7 +153,6 @@ class SkyPainter extends CustomPainter {
 
           if (pos1 == null || pos2 == null) continue;
           canvas.drawLine(pos1, pos2, linePaint);
-          drawnLines++;
         }
       }
     }
@@ -190,7 +187,6 @@ class SkyPainter extends CustomPainter {
       } else {
         canvas.drawCircle(offset, dotSize, paint);  // Planets/moon stay round
       }
-      // canvas.drawCircle(offset, SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 1.0), paint);
 
       // 🏷️ LABELS (planets/constellations always, others when selected)
       final bool alwaysShowLabel = obj.type == 'sun'         ||

@@ -39,7 +39,7 @@ class CelestialRepository {
     return [...realObjects, ...groupedObjects, ...starObjects];
   }
 
-  // --------------------- Load Stars from CSV ---------------------
+  // --------------------- Load Stars from CSV file ---------------------
 
   Future<List<CelestialObject>> _loadStarsFromCsv(AstroCalculator astro) async {
     final rawCsv = await rootBundle.loadString('assets/hygdata_v42.csv');
@@ -55,11 +55,11 @@ class CelestialRepository {
       try {
         final row = _parseCsvLine(line);
         
-        // ✅ Exact column indexes from the header we saw
+        // Exact column indexes from the header we saw
         final con = row[29].trim().toLowerCase();  // "con"
         final mag = double.tryParse(row[13].trim()) ?? 99.0;  // "mag"
         final raDeg   = double.tryParse(row[17].trim()) ?? 0.0;  // 🆕 ra DEGREES col 17!
-        final decDeg  = double.tryParse(row[19].trim()) ?? 0.0;  // dec col 18 ✅   
+        final decDeg  = double.tryParse(row[19].trim()) ?? 0.0;     
         final name    = row[6].trim();  // "proper"
 
         if (!_constellations.contains(con)) continue;
@@ -100,7 +100,8 @@ class CelestialRepository {
     return stars;
   }
 
-  // Helper method for proper CSV parsing
+  // -------------- Helper method for proper CSV parsing --------------
+
   List<String> _parseCsvLine(String line) {
     List<String> result = [];
     String current = '';
@@ -120,6 +121,8 @@ class CelestialRepository {
     result.add(current.trim());
     return result;
   }
+
+  // ---------------- Load Constellation Lines From JSON ---------------------
 
   Future<Map<String, List<List<String>>>> loadConstellationLines() async {
     try {
@@ -147,6 +150,8 @@ class CelestialRepository {
       return {}; // Empty map = no crash
     }
   }
+
+  // ------------------- Group Stars into Constellations ---------------------
   
   List<CelestialObject> _groupStarsByConstellation(
     List<CelestialObject> stars,
@@ -163,7 +168,7 @@ class CelestialRepository {
       'gem': lines['gem']!,
     };
     
-    // Full names [web:14][web:15]
+    // Full names
     final fullNames = {
       'ori': 'Orion',
       'uma': 'Ursa Major',

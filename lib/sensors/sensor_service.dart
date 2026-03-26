@@ -71,7 +71,7 @@ class SensorService {
     final double accNorm = math.sqrt(ax*ax + ay*ay + az*az);
     final double axN = ax / accNorm;
     final double ayN = ay / accNorm;
-    final double azN = az / accNorm;
+    // final double azN = az / accNorm;
 
     // Tilt-compensated magnetic North components
     final double pitch = math.asin((-axN).clamp(-1.0, 1.0));
@@ -93,7 +93,7 @@ class SensorService {
     _smoothAzimuth = (_smoothAzimuth + _alpha * azDelta + 360) % 360;    
     _smoothAltitude = _alpha * altitude + (1 - _alpha) * _smoothAltitude;
 
-    // ✅ FIX: Only emit if something changed more than 1 degree
+    // Only emit if something changed more than 1 degree
     final azDiff  = (_smoothAzimuth  - _lastEmittedAzimuth).abs();
     final altDiff = (_smoothAltitude - _lastEmittedAltitude).abs();
 
