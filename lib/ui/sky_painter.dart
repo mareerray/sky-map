@@ -237,6 +237,7 @@ class SkyPainter extends CustomPainter {
     };
 
     for (final entry in directions.entries) {
+      // final double dAz = ((phoneAzimuth - entry.value) + 540) % 360 - 180;
       final double dAz = ((entry.value - phoneAzimuth) + 540) % 360 - 180;
 
       // Only show if within field of view

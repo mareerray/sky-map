@@ -85,16 +85,8 @@ class SensorService {
                       + my * math.cos(roll)
                       - mz * math.sin(roll) * math.cos(pitch);
 
-    double azimuth = math.atan2(magY, magX) * (180 / math.pi);
+    double azimuth = math.atan2(-magX, magY) * (180 / math.pi);
     azimuth = (azimuth + 360) % 360; // normalize to 0-360
-
-    // // Calculate azimuth (compass direction)
-    // // East vector = magnetometer cross accelerometer
-    // final ex = ay * mz - az * my;
-    // final ey = az * mx - ax * mz;
-
-    // double azimuth = math.atan2(ey, ex) * (180 / math.pi);
-    // azimuth = (azimuth + 180) % 360; // normalize to 0-360
 
     // Smooth it out
     double azDelta = ((azimuth - _smoothAzimuth) + 540) % 360 - 180; // finds the shortest path between two angles
