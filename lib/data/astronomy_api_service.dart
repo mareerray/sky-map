@@ -49,10 +49,6 @@ class AstronomyApiService {
     }
 
     final data = json.decode(response.body);
-    // print('🌙 API Moon: ${data['data']['table']['rows'].where((r) => r['entry']['id'] == 'moon').map((r) => {
-    //   'az': r['cells'][0]['position']['horizontal']['azimuth']['degrees'],
-    //   'alt': r['cells'][0]['position']['horizontal']['altitude']['degrees']
-    // }).toList()}');
 
     final rows = data['data']['table']['rows'] as List;
     final List<CelestialObject> result = [];
@@ -92,5 +88,4 @@ class AstronomyApiService {
 
     return result;
   }
-
 }

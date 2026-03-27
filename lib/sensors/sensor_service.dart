@@ -24,7 +24,7 @@ class SensorService {
   double _smoothAltitude = 0;
   double _lastEmittedAzimuth  = -999; 
   double _lastEmittedAltitude = -999; 
-  static const double _alpha = 0.05; // 0.0 = very smooth, 1.0 = raw/jumpy
+  static const double _alpha = 0.15; // 0.0 = very smooth, 1.0 = raw/jumpy
   // _alpha = 0.15 means each new reading only contributes 15% to the output 
 
   final _controller = StreamController<SensorData>.broadcast();
@@ -34,6 +34,9 @@ class SensorService {
   StreamSubscription? _magSub;
 
   void start() {
+    // Force one initial emit so the sky renders immediately
+    _controller.add(SensorData(azimuth: 0, altitude: 0));
+
     _accelSub = accelerometerEventStream(
       samplingPeriod: const Duration(milliseconds: 100), // ← exactly 100ms = 10/second
     ).listen((event) {
@@ -59,10 +62,10 @@ class SensorService {
     final my = _magnetometer[1];
     final mz = _magnetometer[2];
 
-    // Altitude — how much you tilt the phone up/down
+    // ------ Altitude Calculation — how much you tilt the phone up/down ---------
     // Works correctly when holding phone upright (portrait mode)
     final double altitude = math.atan2(
-      -az,                           // Z changes when tilting toward sky
+      az,                           // Z changes when tilting toward sky
       math.sqrt(ax * ax + ay * ay),  // XY plane = base
     ) * (180 / math.pi);
 
@@ -74,21 +77,21 @@ class SensorService {
     // final double azN = az / accNorm;
 
     // Tilt-compensated magnetic North components
-    final double pitch = math.asin((-axN).clamp(-1.0, 1.0));
-    // final double roll  = math.asin(ayN / math.cos(pitch));
+    final double pitch = math.asin((-axN).clamp(-1.0, 1.0)); // Tilt forward around Y-axis
     final double cosP = math.cos(pitch);
     final double sinRoll = (cosP.abs() < 0.001) ? 0.0 : (ayN / cosP).clamp(-1.0, 1.0);
-    final double roll = math.asin(sinRoll);
+    final double roll = math.asin(sinRoll); // Tilt sideways around X-axis
 
     final double magX = mx * math.cos(pitch) + mz * math.sin(pitch);
     final double magY = mx * math.sin(roll) * math.sin(pitch)
                       + my * math.cos(roll)
                       - mz * math.sin(roll) * math.cos(pitch);
 
+    // ------ Azimuth Calculation — which direction you’re facing (0-360°)/Compass direction ---------
     double azimuth = math.atan2(-magX, magY) * (180 / math.pi);
     azimuth = (azimuth + 360) % 360; // normalize to 0-360
 
-    // Smooth it out
+    // ------ Smooth it out to prevent jitter -----------------
     double azDelta = ((azimuth - _smoothAzimuth) + 540) % 360 - 180; // finds the shortest path between two angles
     _smoothAzimuth = (_smoothAzimuth + _alpha * azDelta + 360) % 360;    
     _smoothAltitude = _alpha * altitude + (1 - _alpha) * _smoothAltitude;
@@ -97,7 +100,8 @@ class SensorService {
     final azDiff  = (_smoothAzimuth  - _lastEmittedAzimuth).abs();
     final altDiff = (_smoothAltitude - _lastEmittedAltitude).abs();
 
-    if (azDiff > 2.5 || altDiff >2.5) {
+    // Only send a new update if something changed by more than 2.5°, avoiding unnecessary redraws
+    if (azDiff > 2.5 || altDiff > 2.5) {
       _lastEmittedAzimuth  = _smoothAzimuth;
       _lastEmittedAltitude = _smoothAltitude;
 

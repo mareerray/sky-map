@@ -209,3 +209,28 @@ Click the option that says "Preferences: Open User Settings (JSON)"
 ```
 print('\x1b[36m📍 GPS: lat=${position.latitude}, lon=${position.longitude}\x1b[0m');
 ```
+
+## Android defines:
+
+X = points right when holding phone portrait
+
+Y = points up toward top of phone
+
+Z = points out of the screen toward your face
+---------------------
+ax = left/right tilt (barely changes in all your tests → almost always 0 ✅)
+
+ay = up/down tilt (the main axis when holding phone upright)
+
+az = forward/backward tilt (points toward sky when flat)
+
+Now when screen faces sky: atan2(+9.8, ≈0) = +90° ✅
+When screen faces ground: atan2(-9.8, ≈0) = -90° ✅
+When upright at horizon: atan2(≈0, 9.8) = 0° ✅
+#### Double Check After the Fix
+| Phone position |	Expected altitude	| What you should see |
+|----------------|--------------------|---------------------|
+|Screen facing sky (flat)	|≈ +90°	|Sky, straight up|
+|Screen facing ground (flat)	|≈ -90°	|Below horizon|
+|Upright portrait, horizon visible	|≈ 0°	|Horizon in center|
+|Tilted 45° toward sky	|≈ +45°	|Above horizon|

@@ -91,10 +91,10 @@ class CelestialRepository {
         // Skip bad rows
       }
     }
-    print('ALL STARS LOADED (${stars.length}):');
-    for (var star in stars.take(20)) {  // First 20
-      print('  ${star.name} (${star.description}) alt=${star.altitude}');
-    }
+    // print('ALL STARS LOADED (${stars.length}):');
+    // for (var star in stars.take(20)) {  // First 20
+    //   print('  ${star.name} (${star.description}) alt=${star.altitude}');
+    // }
     return stars;
   }
 
@@ -158,12 +158,12 @@ class CelestialRepository {
     final result = <CelestialObject>[];
     
     final conData = {
-      'ori': lines['ori']!,
-      'uma': lines['uma']!,
-      'cas': lines['cas']!,
-      'leo': lines['leo']!,
-      'cyg': lines['cyg']!,
-      'gem': lines['gem']!,
+      'ori': lines['ori'] ?? [],
+      'uma': lines['uma'] ?? [],
+      'cas': lines['cas'] ?? [],
+      'leo': lines['leo'] ?? [],
+      'cyg': lines['cyg'] ?? [],
+      'gem': lines['gem'] ?? [],
     };
     
     // Full names
