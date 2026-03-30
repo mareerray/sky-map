@@ -234,3 +234,74 @@ When upright at horizon: atan2(≈0, 9.8) = 0° ✅
 |Screen facing ground (flat)	|≈ -90°	|Below horizon|
 |Upright portrait, horizon visible	|≈ 0°	|Horizon in center|
 |Tilted 45° toward sky	|≈ +45°	|Above horizon|
+
+_____________________________________________________________
+# Reading CSV data
+## What is row?
+
+Think of each line in the CSV file like a spreadsheet row. Each cell in that row has a number starting from 0.
+
+
+|col:  |0|     1|    2|   3| ... | 6 |        7|       8|      ...|  13|    ... | 29|
+|----|-------|-----|------|-------|------|------|-------|-----|------|------|--------|------|
+|....|"id"| "hip"|"hd"|"hr"|...|"proper"|"ra"|  "dec"|  ...| "mag"| ...| "con" |
+|.....|26142| 2081| ...| ...|......| "Meissa"| 5.585| 9.934|  ...| 3.39|  ...| "Ori" |
+
+So row[6] means "give me the value in cell number 6" — which is the star's name.
+
+## Line by Line
+```dart
+final con = row[29].trim().toLowerCase();
+```
+- row[29] → gets the constellation abbreviation, e.g. "Ori"
+
+- .trim() → removes any accidental spaces, e.g. " Ori " → "Ori"
+
+- .toLowerCase() → makes it all lowercase "Ori" → "ori" so it matches your _constellations set which uses lowercase
+
+```dart
+final mag = double.tryParse(row[13].trim()) ?? 99.0;
+```
+- row[13] → gets the magnitude (brightness), e.g. "3.39"
+
+- double.tryParse(...) → converts the text "3.39" into a number 3.39
+
+- ?? 99.0 → this is a safety net — if the cell is empty or broken and can't be converted, use 99.0 instead (a very faint value that will be filtered out)
+
+```dart
+final raHours = double.tryParse(row[7].trim()) ?? 0.0;
+```
+- row[7] → gets the Right Ascension (like longitude in the sky), stored in hours (0–24)
+
+- Same double.tryParse conversion from text to number
+
+- ?? 0.0 → safety net default
+
+```dart
+final decDeg = double.tryParse(row[8].trim()) ?? 0.0;
+```
+- row[8] → gets the Declination (like latitude in the sky), stored in degrees (-90 to +90)
+
+- Same pattern as above
+
+```dart
+final name = row[6].trim();
+```
+- row[6] → gets the star's proper name, e.g. "Meissa" or "Rigel"
+
+- .trim() → removes extra spaces
+
+- No number conversion needed — it's already text ✅
+
+### The Simple Mental Model
+Think of it like reading a specific column from a table:
+
+|col 6|	col 7|	col 8|	col 13|	col 29|
+|------|-----|-----|-------|-----------|
+|name	|ra (hours)|	dec (degrees)|	magnitude|	constellation|
+|Meissa	|5.585	|9.934|	3.39	|Ori|
+|Rigel	|5.242|	-8.20|	0.18|	Ori|
+
+row[6] just means "give me column 6 from this row". That's it! 😊
+
+// 22496,22549,30836,1552,"","3Pi 4Ori","3 Orionis",4.853434,5.605104,322.5806,

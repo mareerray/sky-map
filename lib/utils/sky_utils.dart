@@ -6,12 +6,10 @@ class SkyUtils {
   static Color colorForType(String type) {
     switch (type) {
       case 'star': return const Color(0xFFCDA882);     // Gold
-      case 'bright_star': return const Color(0xFFCDA882);     // Gold
       case 'planet': return const Color(0xFF4FC3F7);  // Cyan
       case 'moon': return const Color(0xFFE8E8D0);    // Cream
       case 'sun': return const Color(0xFFD46464);
       case 'constellation': return const Color(0xFFCDA882); 
-      // case 'constellation': return const Color(0xFF5C6BC0); 
       case 'dwarf_planet': return const Color(0xFFE18E3A);  // Brown
       default: return Colors.white.withValues(alpha:0.7);
     }
@@ -20,7 +18,7 @@ class SkyUtils {
   // 📏 Sizes for each celestial type
   static double sizeForType(String type, {required double magnitude}) {
     switch (type) {
-      case 'star': return 5;
+      case 'star': return 3;
       case 'planet': return 10;
       case 'moon': return 14;
       case 'sun': return 18;

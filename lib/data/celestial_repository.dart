@@ -43,13 +43,17 @@ class CelestialRepository {
   // --------------------- Load Stars from CSV file ---------------------
 
   Future<List<CelestialObject>> _loadStarsFromCsv(AstroCalculator astro) async {
+    
     final rawCsv = await rootBundle.loadString('assets/hygdata_v42.csv');
     final lines = rawCsv.split('\n');
+
+    // print('HEADER: ${lines[0]}');
 
     final List<CelestialObject> stars = [];
     int processed = 0;
 
-    for (int i = 1; i < lines.length && processed < 15000; i++) {
+    for (int i = 1; i < lines.length && processed < 50000; i++) {
+
       final line = lines[i].trim();
       if (line.isEmpty || !line.contains(',')) continue;
 
@@ -59,20 +63,17 @@ class CelestialRepository {
         // Exact column indexes from the header we saw
         final con = row[29].trim().toLowerCase();  // "con"
         final mag = double.tryParse(row[13].trim()) ?? 99.0;  // "mag"
-        final raDeg   = double.tryParse(row[17].trim()) ?? 0.0;  // 🆕 ra DEGREES col 17!
-        final decDeg  = double.tryParse(row[19].trim()) ?? 0.0;     
+        final raHours = double.tryParse(row[7].trim()) ?? 0.0;   // col 7 = "ra" in HOURS
+        final decDeg  = double.tryParse(row[8].trim()) ?? 0.0;   // col 8 = "dec" in degrees
         final name    = row[6].trim();  // "proper"
 
         if (!_constellations.contains(con)) continue;
 
         // 🆕 Tiered brightness filtering
-        // if (mag > 4.5) continue; // Only stars brighter than mag 4.5
-        // Repository: special case important stars
-        if (mag > 4.0 && !['saiph', 'merak', 'phecda'].contains(name.toLowerCase())) continue;
+        if (mag > 5.2) continue; // Only stars brighter than mag 4.5
 
         final starType = 'star';
-
-        final coords = astro.getStarHorizontal(raHours: raDeg / 15.0, decDeg: decDeg);
+        final coords = astro.getStarHorizontal(raHours: raHours, decDeg: decDeg);
 
         final az = coords['azimuth'] ?? 0.0;
         final alt = coords['altitude'] ?? 0.0;
@@ -91,10 +92,6 @@ class CelestialRepository {
         // Skip bad rows
       }
     }
-    // print('ALL STARS LOADED (${stars.length}):');
-    // for (var star in stars.take(20)) {  // First 20
-    //   print('  ${star.name} (${star.description}) alt=${star.altitude}');
-    // }
     return stars;
   }
 

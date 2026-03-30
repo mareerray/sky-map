@@ -1,39 +1,93 @@
 {
   "ori": [  
-    ["betelgeuse", "alnitak"],
+    ["betelgeuse", "meissa"],
+    ["meissa", "bellatrix"],
     ["bellatrix", "mintaka"],
-    ["alnitak", "alnilam"],
-    ["alnilam", "mintaka"],
+    ["mintaka", "alnitak"],
+    ["betelgeuse", "alnitak"],
     ["mintaka", "rigel"],
-    ["alnitak", "saiph"]
+    ["alnitak", "saiph"],
+    ["saiph", "rigel"],
+    ["bellatrix", "tabit"],
+    ["tabit", "3 orionis"],
+    ["tabit", "2 orionis"],
+    ["2 orionis", "7 orionis"],
+    ["8 orionis", "10 orionis"],
+    ["3 orionis", "8 orionis"],
+    ["betelgeuse", "mu orionis"],
+    ["mu orionis", "xi orionis"],
+    ["xi orionis", "nu orionis"],
+    ["nu orionis", "chi orionis"],
+    ["xi orionis", "64 orionis"]
+  ],
+  "cyg": [
+    ["sadr", "alpha cygni"],
+    ["sadr", "delta cygni"],
+    ["delta cygni", "iota cygni"],
+    ["iota cygni", "kappa cygni"],
+    ["sadr", "eta cygni"],
+    ["eta cygni", "albireo"],
+    ["sadr", "gienah"],
+    ["gienah", "zeta cygni"],
+    ["zeta cygni", "mu cygni"]
   ],
   "uma": [  
     ["dubhe", "merak"],
+    ["dubhe", "megrez"],
     ["merak", "phecda"],
     ["phecda", "megrez"],
     ["megrez", "alioth"],
     ["alioth", "mizar"],
-    ["mizar", "alkaid"]
+    ["mizar", "alkaid"],
+    ["phecda", "chi ursae majoris"],
+    ["chi ursae majoris", "psi ursae majoris"],
+    ["psi ursae majoris", "tania borealis"],
+    ["psi ursae majoris", "Tania Australis"],
+    ["dubhe", "23 ursae majoris"],
+    ["23 ursae majoris", "muscida"],
+    ["muscida", "upsilon ursae majoris"],
+    ["upsilon ursae majoris", "phi ursae majoris"],
+    ["merak", "phi ursae majoris"],
+    ["phi ursae majoris", "26 ursae majoris"],
+    ["26 ursae majoris", "theta ursae majoris"],
+    ["theta ursae majoris", "kappa ursae majoris"],
+    ["theta ursae majoris", "talitha"]
   ],
   "cas": [  
-    ["schedar", "caph"],
-    ["caph", "cih"],
-    ["cih", "ruchbah"],
-    ["ruchbah", "segin"]
+    ["segin", "ruchbah"],
+    ["ruchbah", "cih"],
+    ["cih", "schedar"],
+    ["schedar", "caph"]
   ],
   "leo": [  
-    ["regulus", "denebola"],
-    ["regulus", "algieba"],
-    ["algieba", "zosma"]
-  ],
-  "cyg": [ 
-    ["deneb", "albaire"],
-    ["sadr", "gamma_cyg"],
-    ["gamma_cyg", "delta_cyg"]
+    ["denebola", "zosma"],
+    ["denebola", "chertan"],
+    ["chertan", "regulus"],
+    ["chertan", "zosma"],
+    ["zosma", "algieba"],
+    ["algieba", "eta leonis"],
+    ["eta leonis", "regulus"],
+    ["eta leonis", "algieba"],
+    ["algieba", "adhafera"],
+    ["adhafera", "rasalas"],
+    ["rasalas", "ras elased australis"]
   ],
   "gem": [  
-    ["pollux", "castor"],
-    ["pollux", "alhena"],
-    ["alhena", "tejat"]
+    ["pollux", "upsilon geminorum"],
+    ["upsilon geminorum", "kappa geminorum"],
+    ["upsilon geminorum", "iota geminorum"],
+    ["upsilon geminorum", "wasat"],
+    ["wasat", "lambda geminorum"],
+    ["wasat", "mekbuda"],
+    ["lambda geminorum", "alzirr"],
+    ["mekbuda", "alheni"],
+    ["iota geminorum","tau geminorum"],
+    ["castor","tau geminorum"],
+    ["tau geminorum", "Theta Geminorum"],
+    ["tau geminorum", "mebsuta"],
+    ["mebsuta", "nu geminorum"],
+    ["mebsuta", "tejat"],
+    ["tejat", "propus"],
+    ["propus", "1 geminorum"]
   ]
 }

@@ -60,11 +60,6 @@ class SkyPainter extends CustomPainter {
     // ✅ Print ONCE when stars change
     if (objects.isNotEmpty && _lastObjectCount != objects.length) {
       _lastObjectCount = objects.length;
-      // print('🌟 Total stars: ${objects.where((o) => o.type == "star").length}');
-      // print('Found Betelgeuse: ${objects.any((o) => o.name.toLowerCase().contains("betelgeuse"))}');
-      // print('Found Alnitak: ${objects.any((o) => o.name.toLowerCase().contains("alnitak"))}');
-      // print('Found Rigel: ${objects.any((o) => o.name.toLowerCase().contains("rigel"))}');
-      // print('Found Dubhe: ${objects.any((o) => o.name.toLowerCase().contains("dubhe"))}');
     }
 
     _drawBackground(canvas, size); // 1. Black sky + ground
@@ -142,8 +137,6 @@ class SkyPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 0.5);
 
-    // // print('🎨 Constellations: ${constellationLines.keys}');  // Debug
-
     // Loop the constellations from JSON
     for (final conEntry in constellationLines.entries) {
       final lines = conEntry.value;
@@ -157,16 +150,8 @@ class SkyPainter extends CustomPainter {
         // Flexible name match (handles gamma_cas → cih)
         final star1 = objects.firstWhereOrNull((obj) => 
           obj.name.toLowerCase().contains(star1Name));
-  //        if (star1 == null) {
-  //   print('❌ MISSING STAR: $star1Name in ${conEntry.key}');
-  // }
         final star2 = objects.firstWhereOrNull((obj) => 
           obj.name.toLowerCase().contains(star2Name));
-  //        if (star2 == null) {
-  //   print('❌ MISSING STAR: $star2Name in ${conEntry.key}');
-  // }
-
-        // print('Line $star1Name-$star2Name → found: ${star1?.name}, ${star2?.name}');
 
         if (star1 != null && star2 != null) {
           final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
@@ -266,14 +251,14 @@ class SkyPainter extends CustomPainter {
     'uma': 'dubhe',
     'cas': 'schedar',   // brightest in Cassiopeia
     'leo': 'regulus',   // brightest in Leo
-    'cyg': 'deneb',     // brightest in Cygnus
+    'cyg': 'alpha cygni',     // brightest in Cygnus
     'gem': 'pollux',    // brightest in Gemini
   }[acronym];
 
     if (targetStarName == null) continue;
 
     final star = objects.firstWhereOrNull(
-      (obj) => obj.name.toLowerCase().contains(targetStarName) && obj.altitude > -5,
+      (obj) => obj.name.toLowerCase().contains(targetStarName),
     );
 
     if (star == null) continue;
