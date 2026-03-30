@@ -27,29 +27,35 @@ class _SkyScreenState extends State<SkyScreen> {
   }
 
   void _onTap(TapUpDetails details, List<CelestialObject> objects, Size size, double phoneAzimuth, double phoneAltitude) {
-    final tapX = details.localPosition.dx;
-    final tapY = details.localPosition.dy;
+    final tapPos = details.localPosition;
 
     CelestialObject? nearest;
     double nearestDistance = double.infinity;
 
     for (final obj in objects) {
-      // Must match _toScreen() in SkyPainter exactly
-      final offset = SkyPainter.toScreen(
-        obj.azimuth, obj.altitude, size, 
-        phoneAzimuth, phoneAltitude); 
-      if (offset == null) continue;
-      final double distance = (offset - Offset(tapX, tapY)).distance;
+      // Skip constellations — they aren't tappable dots
+      if (obj.type == 'constellation') continue;
 
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
+      final screenPos = SkyPainter.toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
+      if (screenPos == null) continue;
+      final dist = (screenPos - tapPos).distance;
+
+      if (dist < nearestDistance) {
+        nearestDistance = dist;
         nearest = obj;
       }
     }
 
+    const double maxTapRadius = 40.0; // max distance in pixels
+
+
     setState(() {
-      _selectedObject = (nearestDistance < 20) ? nearest : null;
-    });
+      if (nearest != null && nearestDistance <= maxTapRadius) {
+        _selectedObject = nearest; // close enough → select it
+      } else {
+        _selectedObject = null;    // too far → deselect (tap empty sky)
+      }
+    });  
   }
 
   @override

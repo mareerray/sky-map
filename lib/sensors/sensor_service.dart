@@ -64,7 +64,7 @@ class SensorService {
 
     // ------ Altitude Calculation — how much you tilt the phone up/down ---------
     // Works correctly when holding phone upright (portrait mode)
-    final double altitude = math.atan2(
+    final double altitude = -math.atan2(
       az,                           // Z changes when tilting toward sky
       math.sqrt(ax * ax + ay * ay),  // XY plane = base
     ) * (180 / math.pi);
@@ -90,6 +90,10 @@ class SensorService {
     // ------ Azimuth Calculation — which direction you’re facing (0-360°)/Compass direction ---------
     double azimuth = math.atan2(-magX, magY) * (180 / math.pi);
     azimuth = (azimuth + 360) % 360; // normalize to 0-360
+
+    // Add declination correction 
+    const double declination = 10.0; 
+    azimuth = (azimuth - declination + 360) % 360;
 
     // ------ Smooth it out to prevent jitter -----------------
     double azDelta = ((azimuth - _smoothAzimuth) + 540) % 360 - 180; // finds the shortest path between two angles

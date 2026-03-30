@@ -14,7 +14,7 @@ class SkyPainter extends CustomPainter {
 
   static const double fov = 60.0;
 
-  int _lastObjectCount = 0; // ✅ Print ONCE when stars change
+  int _lastObjectCount = 0; // Print ONCE when stars change
 
   SkyPainter({
     required this.objects, 
@@ -57,7 +57,7 @@ class SkyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // ✅ Print ONCE when stars change
+    // Print ONCE when stars change
     if (objects.isNotEmpty && _lastObjectCount != objects.length) {
       _lastObjectCount = objects.length;
     }
@@ -72,127 +72,84 @@ class SkyPainter extends CustomPainter {
 
   // --------------- Draw Background ------------
   void _drawBackground(Canvas canvas, Size size) {
-    final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
+  final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
 
-    // ☀️ SKY — deep space → warm sunset glow near horizon
-    final skyGradient = LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: const [
-        Color(0xFF01010A),  // Deep space black
-        Color(0xFF0D0B2A),  // Dark indigo
-        Color(0xFF1B1040),  // Deep purple
-        Color(0xFF3B1F5E),  // Purple
-      ],
-      stops: const [0.0, 0.30, 0.70, 1.0],
-    );
+  // ☀️ SKY — true deep space black → rich twilight at horizon
+  final skyGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: const [
+      Color(0xFF000000),  // Pure black (space)
+      Color(0xFF04020F),  // Almost black with hint of purple
+      Color(0xFF120836),  // Deep twilight indigo
+      Color(0xFF2D1158),  // Rich purple — horizon glow
+      Color(0xFF4A1870),  // Vivid deep violet right at horizon
+    ],
+    stops: const [0.0, 0.15, 0.45, 0.78, 1.0],
+  );
 
-    final skyPaint = Paint()
-      ..shader = skyGradient.createShader(
-          Rect.fromLTWH(0, 0, size.width, horizonY));
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, horizonY), skyPaint);
+  final skyPaint = Paint()
+    ..shader = skyGradient.createShader(
+        Rect.fromLTWH(0, 0, size.width, horizonY));
+  canvas.drawRect(Rect.fromLTWH(0, 0, size.width, horizonY), skyPaint);
 
-    // 🌍 GROUND — warm glow at horizon fading to dark earth
-    final groundGradient = LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: const [
-        Color.fromARGB(255, 47, 21, 8),  // Dark reddish-brown
-        Color(0xFF1A0A05),  // Very dark earth
-        Color(0xFF000000),  // Black bottom
-      ],
-      stops: const [0.0, 0.40, 1.0],
-    );
+  // 🌍 GROUND — mirror the violet, then drop into pure darkness
+  final groundGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: const [
+      Color(0xFF3D1260),  // Matches sky horizon — seamless join
+      Color(0xFF1A0A35),  // Deep earth purple
+      Color(0xFF080510),  // Almost black
+      Color(0xFF020104),  // Pure underground darkness
+    ],
+    stops: const [0.0, 0.25, 0.60, 1.0],
+  );
 
-    final groundPaint = Paint()
-      ..shader = groundGradient.createShader(
-          Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY));
-    canvas.drawRect(
-        Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY),
-        groundPaint);
-  }
+  final groundPaint = Paint()
+    ..shader = groundGradient.createShader(
+        Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY));
+  canvas.drawRect(
+      Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY),
+      groundPaint);
 
-  // void _drawBackground(Canvas canvas, Size size) {
-  //   // Dynamic horizon (0° = horizon line)
-  //   final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
-    
-  //   // Sky gradient (always top to horizon)
-  //   final skyGradient = LinearGradient(
-  //     begin: Alignment.topCenter,
-  //     end: Alignment.center,
-  //     colors: [Color(0xFF02040F), Color(0xFF0a0a1e)], // space → horizon edge
-  //   );
+  // Dark overlay on ground only 
+  final darkOverlayPaint = Paint()
+    ..color = const Color(0xFF000000).withValues(alpha: 0.45); 
 
-  //   // DARKER gradient ground — from horizon to bottom
-  //   final groundGradient = LinearGradient(
-  //     begin: Alignment.center,
-  //     end: Alignment.bottomCenter,
-  //     colors: [
-  //       Color(0xFF0a0a1e),  // Very dark blue at horizon
-  //       Color(0xFF08101a),  // Darker blue 
-  //       Color(0xFF000000),  // Pure black bottom
-  //     ],
-  //     stops: const [0.0, 0.6, 1.0],
-  //   );
-
-  //   // Sky: top → horizon
-  //   final skyPaint = Paint()
-  //     ..shader = skyGradient.createShader(Rect.fromLTWH(0, 0, size.width, horizonY));
-  //   canvas.drawRect(Rect.fromLTWH(0, 0, size.width, horizonY), skyPaint);
-
-  //   // Ground: horizon → bottom (covers all negative alt objects)
-  //   final groundPaint = Paint()
-  //     ..shader = groundGradient.createShader(Rect.fromLTWH(0, horizonY, size.width, size.height));
-  //   canvas.drawRect(Rect.fromLTWH(0, horizonY, size.width, size.height), groundPaint);
-  // }
+  canvas.drawRect(
+    Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY),
+    darkOverlayPaint);
+}
 
   // --------------- Draw Horizon ------------
   void _drawHorizon(Canvas canvas, Size size) {
-    final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
+  final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
 
-    // Soft glowing horizon line
-    final glowLinePaint = Paint()
-      ..color = const Color(0x44FF8030)  // Orange glow
-      ..strokeWidth = 2.0
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-    canvas.drawLine(
-        Offset(0, horizonY), Offset(size.width, horizonY), glowLinePaint);
+  // Soft glowing horizon line 
+  final glowLinePaint = Paint()
+    ..color = const Color(0x55A050FF)  // Purple-violet glow
+    ..strokeWidth = 1.5
+    ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
+  canvas.drawLine(
+      Offset(0, horizonY), Offset(size.width, horizonY), glowLinePaint);
 
-    // HORIZON label — subtle and warm toned
-    final textPainter = TextPainter(
-      text: const TextSpan(
-        text: 'HORIZON',
-        style: TextStyle(
-          color: Color(0x88FFAA55),  // Warm orange, faded
-          fontSize: 10,
-          letterSpacing: 2.5,
-          fontWeight: FontWeight.w300,
-        ),
+  // HORIZON label 
+  final textPainter = TextPainter(
+    text: const TextSpan(
+      text: 'HORIZON',
+      style: TextStyle(
+        color: Color(0x66BB88FF),  // Soft purple, faded
+        fontSize: 10,
+        letterSpacing: 2.5,
+        fontWeight: FontWeight.w300,
       ),
-      textDirection: TextDirection.ltr,
-    )..layout();
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
 
-    textPainter.paint(canvas, Offset(12, horizonY + 5));
-  }
-  // void _drawHorizon(Canvas canvas, Size size) {
-  //   final double horizonY = (0.5 + phoneAltitude / fov) * size.height; // moves with tilt
-    
-  //   final linePaint = Paint()
-  //     ..color = Colors.white24
-  //     ..strokeWidth = 2.0;
-
-  //   canvas.drawLine(Offset(0, horizonY), Offset(size.width, horizonY), linePaint);
-
-  //   final textPainter = TextPainter(
-  //     text: const TextSpan(
-  //       text: 'HORIZON',
-  //       style: TextStyle(color: Colors.white38, fontSize: 11),
-  //     ),
-  //     textDirection: TextDirection.ltr,
-  //   )..layout();
-
-  //   textPainter.paint(canvas, Offset(10, horizonY + 4));
-  // }
+  textPainter.paint(canvas, Offset(12, horizonY + 5));
+}
 
   // --------------- Draw Constellation Lines from JSON ------------
 
@@ -239,20 +196,23 @@ class SkyPainter extends CustomPainter {
       final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
       if (offset == null) continue; 
 
+      // Fade objects below horizon
+      final double opacity = _altitudeOpacity(obj.altitude);
+
       // 🎇 PLANET GLOW FIRST (behind main dot)
       final double dotSize = SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 3.0);
       if (obj.type == 'moon' || obj.type == 'sun' ||
           (obj.type == 'planet') ||
           (obj.type == 'star' && (obj.magnitude ?? 99) < 2.0)) {
         final glowPaint = Paint()
-          ..color = SkyUtils.colorForType(obj.type).withValues(alpha: 0.25)
+          ..color = SkyUtils.colorForType(obj.type).withValues(alpha: 0.25 * opacity)
           ..maskFilter = MaskFilter.blur(BlurStyle.normal, dotSize * 1.5);
         canvas.drawCircle(offset, dotSize * 2.5, glowPaint);
       }
 
       // ⭐ MAIN DOT
       final Paint paint = Paint()
-        ..color = SkyUtils.colorForType(obj.type)
+        ..color = SkyUtils.colorForType(obj.type).withValues(alpha: opacity)
         ..style = PaintingStyle.fill;
       // Stars get pointy shape, others stay circle
       if (obj.type == 'star') {
@@ -275,7 +235,7 @@ class SkyPainter extends CustomPainter {
           text: TextSpan(
             text: obj.name,
             style: GoogleFonts.poppins(
-              color: SkyUtils.colorForType(obj.type).withValues(alpha: isSelected ? 1.0 : 0.7),
+              color: SkyUtils.colorForType(obj.type).withValues(alpha: isSelected ? 1.0 : opacity * 0.7),
               fontSize: isSelected ? 13 : 10,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
@@ -289,6 +249,13 @@ class SkyPainter extends CustomPainter {
         );
       }
     }
+  }
+
+  double _altitudeOpacity(double altitudeDeg) {
+    if (altitudeDeg >= 0) return 1.0;        // fully visible above horizon
+    if (altitudeDeg <= -15) return 0.12;     // very faint deep underground
+    // smooth fade between 0° and -15°
+    return 1.0 + (altitudeDeg / 15.0) * 0.88;
   }
 
   // --------------- Draw Constellation labels (optional) ------------

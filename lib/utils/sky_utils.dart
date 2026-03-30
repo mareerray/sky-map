@@ -21,7 +21,7 @@ class SkyUtils {
       case 'star':
         // Magnitude 1 → size 5, magnitude 5 → size 1.5
         // Clamp so nothing is too big or too small
-        return (6.0 - magnitude).clamp(1.5, 6.0);
+        return (6.0 - magnitude).clamp(2.5, 6.0);
       case 'planet': return 10;
       case 'moon': return 14;
       case 'sun': return 18;
