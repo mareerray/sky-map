@@ -145,6 +145,7 @@ class _SkyScreenState extends State<SkyScreen> {
                           constellationLines: state.constellationLines,
                           phoneAzimuth: state.phoneAzimuth,
                           phoneAltitude: state.phoneAltitude,
+                          planetImages: state.planetImages, 
                         ),
                         child: const SizedBox.expand(),
                       ),

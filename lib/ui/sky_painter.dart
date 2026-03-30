@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,10 +9,10 @@ class SkyPainter extends CustomPainter {
   final List<CelestialObject> objects;
   final CelestialObject? selectedObject;
   final Map<String, List<List<String>>> constellationLines; 
+  final Map<String, ui.Image> planetImages;
 
   final double phoneAzimuth;
   final double phoneAltitude;
-
   static const double fov = 60.0;
 
   int _lastObjectCount = 0; // Print ONCE when stars change
@@ -22,7 +23,7 @@ class SkyPainter extends CustomPainter {
     this.constellationLines = const {},
     this.phoneAzimuth = 180, 
     this.phoneAltitude = 45,
-  });
+    this.planetImages = const {},  });
 
   // Static method — used by both painter and sky_screen.dart
   static Offset? toScreen(
@@ -187,7 +188,11 @@ class SkyPainter extends CustomPainter {
   // --------------- Draw Celestial Objects ------------
 
   void _drawObjects(Canvas canvas, Size size) {
+    // print('🖼️ sunImage is: $sunImage'); 
     for (final obj in objects) {
+      // if (obj.name.toLowerCase().contains('sun')) {
+      //   print('☀️ Sun found → type="${obj.type}"'); // 👈 ADD
+      // }
       // if (obj.type == 'star' && 
       //   (obj.name == 'Rigel' || obj.name == 'Betelgeuse' || obj.name == 'Meissa')) {
       //   print('🎨 Drawing ${obj.name} → magnitude=${obj.magnitude}');
@@ -214,10 +219,24 @@ class SkyPainter extends CustomPainter {
       final Paint paint = Paint()
         ..color = SkyUtils.colorForType(obj.type).withValues(alpha: opacity)
         ..style = PaintingStyle.fill;
+
       // Stars get pointy shape, others stay circle
       if (obj.type == 'star') {
         final starPath = SkyUtils.starPath(offset, dotSize);
         canvas.drawPath(starPath, paint);
+      } else if (obj.type == 'sun' || obj.type == 'planet' || obj.type == 'dwarf_planet' || obj.type == 'moon') {
+        final key = obj.name.toLowerCase(); // 'sun', 'saturn', 'mars' etc.
+        final img = planetImages[key];
+
+        if (img != null) {
+          final double size = dotSize * 3;
+          final src = Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble());
+          final dst = Rect.fromCenter(center: offset, width: size, height: size);
+          final imgPaint = Paint()..color = Color.fromRGBO(255, 255, 255, opacity);
+          canvas.drawImageRect(img, src, dst, imgPaint);
+        } else {
+          canvas.drawCircle(offset, dotSize, paint); // fallback if image missing
+        }
       } else if (obj.type != 'constellation') {
         canvas.drawCircle(offset, dotSize, paint);  // Planets/moon stay round
       }
@@ -235,7 +254,7 @@ class SkyPainter extends CustomPainter {
           text: TextSpan(
             text: obj.name,
             style: GoogleFonts.poppins(
-              color: SkyUtils.colorForType(obj.type).withValues(alpha: isSelected ? 1.0 : opacity * 0.7),
+              color: Colors.white.withValues(alpha: isSelected ? 1.0 : opacity * 0.7),
               fontSize: isSelected ? 13 : 10,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
