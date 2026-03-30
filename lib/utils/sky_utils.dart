@@ -18,7 +18,10 @@ class SkyUtils {
   // 📏 Sizes for each celestial type
   static double sizeForType(String type, {required double magnitude}) {
     switch (type) {
-      case 'star': return 3;
+      case 'star':
+        // Magnitude 1 → size 5, magnitude 5 → size 1.5
+        // Clamp so nothing is too big or too small
+        return (6.0 - magnitude).clamp(1.5, 6.0);
       case 'planet': return 10;
       case 'moon': return 14;
       case 'sun': return 18;
@@ -37,24 +40,7 @@ class SkyUtils {
     }
   }
 
-  // 📝 Descriptions for each body
-  static String descriptionFor(String id) {
-    const descriptions = {
-      'sun':     'The star at the center of our Solar System.',
-      'moon':    'Earth\'s only natural satellite.',
-      'mercury': 'The smallest planet and closest to the Sun.',
-      'venus':   'The hottest planet. Brightest object in the night sky after the Moon.',
-      'mars':    'The Red Planet. Has the largest volcano in the Solar System.',
-      'jupiter': 'The largest planet. Has a giant storm called the Great Red Spot.',
-      'saturn':  'Known for its stunning ring system made of ice and rock.',
-      'uranus':  'An ice giant that rotates on its side.',
-      'neptune': 'The farthest planet. Has the strongest winds in the Solar System.',
-      'pluto':   'A dwarf planet in the Kuiper Belt.',
-    };
-    return descriptions[id.toLowerCase()] ?? '';
-  }
-
-    static Path starPath(Offset center, double radius, {int points = 5}) {
+  static Path starPath(Offset center, double radius, {int points = 5}) {
     final path = Path();
     final outer = radius;
     final inner = radius * 0.38;  // Pointy star
@@ -73,6 +59,110 @@ class SkyUtils {
     }
     path.close();
     return path;
+  }
+
+  // 📝 Descriptions for each body
+  static String descriptionFor(String id) {
+    const descriptions = {
+      // ☀️ Solar System
+      'sun':      'The star at the center of our Solar System. About 109 Earths would fit across its diameter. Its surface temperature is around 5,500°C.',
+      'moon':     'Earth\'s only natural satellite, about 384,000 km away. The same side always faces us. It causes our ocean tides.',
+      'mercury':  'The smallest planet and closest to the Sun. A year lasts only 88 days, but a single day lasts 59 Earth days.',
+      'venus':    'The hottest planet at 465°C — even hotter than Mercury. It spins backwards compared to most planets.',
+      'mars':     'The Red Planet. Home to Olympus Mons, the largest volcano in the Solar System — three times the height of Everest.',
+      'jupiter':  'The largest planet — over 1,300 Earths could fit inside it. Its Great Red Spot is a storm that has raged for over 350 years.',
+      'saturn':   'Its stunning rings are made of ice and rock, stretching 282,000 km wide but only about 1 km thick.',
+      'uranus':   'An ice giant that rotates on its side at a 98° tilt. It has 13 known rings and 28 moons.',
+      'neptune':  'The farthest planet, 30 times farther from the Sun than Earth. Its winds reach 2,100 km/h — the fastest in the Solar System.',
+      'pluto':    'A dwarf planet in the Kuiper Belt. Despite being smaller than our Moon, it has five known moons of its own.',
+      // 🔵 ORION
+      'betelgeuse':   'A red supergiant marking Orion\'s right shoulder. Will one day explode as a supernova.',
+      'meissa':       'A hot blue star marking the head of Orion the Hunter.',
+      'bellatrix':    'A blue giant marking Orion\'s left shoulder. Known as the "Female Warrior".',
+      'mintaka':      'The westernmost star in Orion\'s Belt, about 900 light-years away.',
+      'alnilam':      'The middle star in Orion\'s Belt. One of the most luminous stars known.',
+      'alnitak':      'The eastern star in Orion\'s Belt. A triple star system.',
+      'rigel':        'A brilliant blue supergiant marking Orion\'s left foot. The brightest star in Orion.',
+      'saiph':        'A blue supergiant marking Orion\'s right foot, similar in size to Rigel.',
+      'tabit':        'A yellow-white star in the shield of Orion, similar to our Sun.',
+      'mu orionis':   'A multiple star system in the arm of Orion.',
+      'xi orionis':   'A yellow giant in the outer regions of Orion.',
+      'nu orionis':   'A blue-white star near the boundary of Orion.',
+      'chi orionis':  'A faint star in the northern part of Orion.',
+
+      // 🦢 CYGNUS
+      'sadr':         'A yellow supergiant marking the chest of Cygnus the Swan.',
+      'alpha cygni':  'Also called Deneb. A white supergiant — one of the most luminous stars in the galaxy.',
+      'deneb':        'A white supergiant in Cygnus. Part of the Summer Triangle. Over 100,000 times more luminous than the Sun.',
+      'delta cygni':  'A double star in the neck of Cygnus, about 165 light-years away.',
+      'iota cygni':   'A blue-white star in the northern wing of Cygnus.',
+      'kappa cygni':  'An orange giant near the tip of Cygnus\'s northern wing.',
+      'eta cygni':    'An orange giant star in the body of Cygnus.',
+      'albireo':      'A famous double star — one gold, one blue — marking the beak of Cygnus.',
+      'gienah':       'An orange giant marking the southern wing of Cygnus.',
+      'zeta cygni':   'A yellow giant star in the southern wing of Cygnus.',
+      'mu cygni':     'A binary star system at the tip of Cygnus\'s southern wing.',
+
+      // 🐻 URSA MAJOR
+      'dubhe':                  'One of the two "pointer stars" that lead to the North Star Polaris.',
+      'merak':                  'The second pointer star in the Big Dipper, guiding toward Polaris.',
+      'phecda':                 'A white star at the bottom of the Big Dipper\'s bowl.',
+      'megrez':                 'The faintest star in the Big Dipper, connecting the bowl to the handle.',
+      'alioth':                 'The brightest star in Ursa Major and the handle of the Big Dipper.',
+      'mizar':                  'The middle handle star of the Big Dipper. Has a famous companion star, Alcor.',
+      'alkaid':                 'The tip of the Big Dipper\'s handle, about 100 light-years away.',
+      'chi ursae majoris':      'An orange giant in the hind leg of the Great Bear.',
+      'psi ursae majoris':      'A red giant star in the southern body of Ursa Major.',
+      'tania borealis':         'The northern of the two "Tania" stars in the hind paws of the Great Bear.',
+      'tania australis':        'The southern of the two "Tania" stars. A red giant star.',
+      '23 ursae majoris':       'A yellow giant star in the head of Ursa Major.',
+      'muscida':                'An orange giant marking the snout of the Great Bear.',
+      'upsilon ursae majoris':  'A yellow-white subgiant in the neck of Ursa Major.',
+      'phi ursae majoris':      'A faint star in the body of Ursa Major.',
+      '26 ursae majoris':       'A yellow giant in the chest region of Ursa Major.',
+      'theta ursae majoris':    'An orange subgiant in the Great Bear, about 44 light-years away.',
+      'kappa ursae majoris':    'A binary star system in the forepaw of the Great Bear.',
+      'talitha':                'A double star marking the front foot of Ursa Major.',
+
+      // 👑 CASSIOPEIA
+      'segin':    'A blue giant at one end of the W-shape of Cassiopeia.',
+      'ruchbah':  'A white star in Cassiopeia known for its slow pulsations.',
+      'cih':      'The central star of Cassiopeia\'s W, also called Gamma Cassiopeiae.',
+      'schedar':  'The brightest star in Cassiopeia. A giant orange star.',
+      'caph':     'A yellow-white star at the other end of the W in Cassiopeia.',
+
+      // 🦁 LEO
+      'denebola':             'A white star marking the tail of Leo the Lion.',
+      'zosma':                'A white star on the hip of Leo, about 58 light-years away.',
+      'chertan':              'A white star on the haunch of Leo the Lion.',
+      'regulus':              'The brightest star in Leo. Marks the heart of the Lion. Spins so fast it bulges at its equator.',
+      'algieba':              'A beautiful double star system forming the mane of Leo.',
+      'eta leonis':           'A white supergiant in the neck of Leo.',
+      'adhafera':             'A giant star in the head of Leo, part of the curved "sickle" shape.',
+      'rasalas':              'An orange giant marking the top of the Lion\'s head.',
+      'ras elased australis': 'The southernmost of the two bright stars at the tip of Leo\'s sickle.',
+
+      // 👯 GEMINI
+      'pollux':               'The brightest star in Gemini. An orange giant with a confirmed planet orbiting it.',
+      'castor':               'Appears as one star but is actually a system of six stars.',
+      'upsilon geminorum':    'An orange giant in the body of Gemini.',
+      'kappa geminorum':      'An orange giant star in the southern foot of Gemini.',
+      'iota geminorum':       'A yellow giant in the arm of one of the Gemini twins.',
+      'wasat':                'A binary star system in the waist of Gemini.',
+      'lambda geminorum':     'A white star in the body of Gemini.',
+      'mekbuda':              'A pulsating yellow supergiant — its size changes over a 10-day cycle.',
+      'alhena':               'A brilliant white star marking the left foot of Gemini.',
+      'alzirr':               'A yellow-white subgiant near the foot of the southern twin.',
+      'tau geminorum':        'An orange giant in the body of Gemini.',
+      'theta geminorum':      'A white giant in the body of Gemini.',
+      'mebsuta':              'A yellow supergiant in the outstretched arm of Gemini.',
+      'nu geminorum':         'A binary star system in the arm of Gemini.',
+      'tejat':                'An orange-red giant marking the foot of the northern Gemini twin.',
+      'propus':               'A variable red giant star at the foot of Gemini.',
+      '1 geminorum':          'A faint binary star at the edge of the Gemini constellation.',
+    };
+
+    return descriptions[id.toLowerCase()] ?? '';
   }
 }
 

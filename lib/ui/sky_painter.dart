@@ -137,30 +137,26 @@ class SkyPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 0.5);
 
-    // Loop the constellations from JSON
-    for (final conEntry in constellationLines.entries) {
-      final lines = conEntry.value;
+  // Build star lookup once
+    final starMap = <String, CelestialObject>{};
+    for (final obj in objects) {
+      if (obj.type == 'star') starMap[obj.name.toLowerCase()] = obj;
+    }
 
-      for (final line in lines) {
-        if (line.length < 2) continue;
+    // Draw lines from pre-resolved constellation objects
+    for (final obj in objects) {
+      if (obj.type != 'constellation') continue;
+      for (final pair in (obj.lines ?? [])) {
+        if (pair.length < 2) continue;
+        final starA = starMap[pair[0]];
+        final starB = starMap[pair[1]];
+        if (starA == null || starB == null) continue;
 
-        final star1Name = line[0].toString().toLowerCase();
-        final star2Name = line[1].toString().toLowerCase();
-
-        // Flexible name match (handles gamma_cas → cih)
-        final star1 = objects.firstWhereOrNull((obj) => 
-          obj.name.toLowerCase().contains(star1Name));
-        final star2 = objects.firstWhereOrNull((obj) => 
-          obj.name.toLowerCase().contains(star2Name));
-
-        if (star1 != null && star2 != null) {
-          final pos1 = toScreen(star1.azimuth, star1.altitude, size, phoneAzimuth, phoneAltitude);
-          final pos2 = toScreen(star2.azimuth, star2.altitude, size, phoneAzimuth, phoneAltitude);
-          
-          if (pos1 != null && pos2 != null) {
-            canvas.drawLine(pos1, pos2, linePaint);
-          }
-        }      
+        final pos1 = toScreen(starA.azimuth, starA.altitude, size, phoneAzimuth, phoneAltitude);
+        final pos2 = toScreen(starB.azimuth, starB.altitude, size, phoneAzimuth, phoneAltitude);
+        if (pos1 != null && pos2 != null) {
+          canvas.drawLine(pos1, pos2, linePaint);
+        }
       }
     }
   }
@@ -169,18 +165,23 @@ class SkyPainter extends CustomPainter {
 
   void _drawObjects(Canvas canvas, Size size) {
     for (final obj in objects) {
-      // if (obj.type != 'constellation' && obj.altitude < -90) continue;  
+      // if (obj.type == 'star' && 
+      //   (obj.name == 'Rigel' || obj.name == 'Betelgeuse' || obj.name == 'Meissa')) {
+      //   print('🎨 Drawing ${obj.name} → magnitude=${obj.magnitude}');
+      // } 
 
       final offset = toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
       if (offset == null) continue; 
 
       // 🎇 PLANET GLOW FIRST (behind main dot)
-      final double dotSize = SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 1.0);
-      if (obj.type == 'moon' || (obj.type == 'planet' && (obj.magnitude ?? 1.0) < 2.0)) {
+      final double dotSize = SkyUtils.sizeForType(obj.type, magnitude: obj.magnitude ?? 3.0);
+      if (obj.type == 'moon' || obj.type == 'sun' ||
+          (obj.type == 'planet') ||
+          (obj.type == 'star' && (obj.magnitude ?? 99) < 2.0)) {
         final glowPaint = Paint()
-          ..color = SkyUtils.colorForType(obj.type).withValues(alpha:0.3)  
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
-        canvas.drawCircle(offset, dotSize * 2, glowPaint);  
+          ..color = SkyUtils.colorForType(obj.type).withValues(alpha: 0.25)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, dotSize * 1.5);
+        canvas.drawCircle(offset, dotSize * 2.5, glowPaint);
       }
 
       // ⭐ MAIN DOT
@@ -347,7 +348,8 @@ class SkyPainter extends CustomPainter {
     return old.phoneAzimuth != phoneAzimuth ||
       old.phoneAltitude != phoneAltitude ||
       old.objects != objects ||
-      old.selectedObject != selectedObject;
+      old.selectedObject != selectedObject ||
+      old.constellationLines != constellationLines;
   }
 }
 

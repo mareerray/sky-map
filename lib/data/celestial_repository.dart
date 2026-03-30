@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/celestial_object.dart';
+import '../utils/sky_utils.dart';
 import 'astronomy_api_service.dart';
 import 'astro_calculator.dart';
 
@@ -71,20 +72,26 @@ class CelestialRepository {
         if (name.isEmpty) continue;  // skip stars with no proper name
 
         // 🆕 Tiered brightness filtering
-        if (mag > 5.2) continue; // Only stars brighter than mag 4.5
+        if (mag > 6) continue; // Only stars brighter than mag 6
 
         final coords = astro.getStarHorizontal(raHours: raHours, decDeg: decDeg);
 
         final az = coords['azimuth'] ?? 0.0;
         final alt = coords['altitude'] ?? 0.0;
 
+        final nameDesc = SkyUtils.descriptionFor(name.toLowerCase());
+        final description = nameDesc.isNotEmpty 
+          ? nameDesc 
+          : 'A star in the ${con.toUpperCase()} constellation';
+
         stars.add(CelestialObject(
           id: 'star_$processed',
           name: name,
           type: 'star',
-          description: 'A star in the $con constellation',
+          description: description,
           azimuth: az,
           altitude: alt,
+          magnitude: mag,
         ));
 
         processed++;

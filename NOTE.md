@@ -305,3 +305,38 @@ Think of it like reading a specific column from a table:
 row[6] just means "give me column 6 from this row". That's it! 😊
 
 // 22496,22549,30836,1552,"","3Pi 4Ori","3 Orionis",4.853434,5.605104,322.5806,
+
+## Magnitude 
+
+controls both how big and how bright a star appears. Let me explain it simply.
+
+### What is Magnitude?
+Think of magnitude like a reverse score — the lower the number, the brighter and bigger the star. This feels backwards at first, but it comes from ancient astronomy where the brightest stars were called "first class" (magnitude 1) and the faintest were "sixth class" (magnitude 6).
+
+| Magnitude	| Example	| How it looks |
+|-----------|---------|--------------|
+|-1.46|	Sirius (brightest star)|	Dazzlingly bright|
+|0.13|	Rigel	|Very bright, big dot|
+|0.42	|Betelgeuse	|Very bright|
+|3.39|	Meissa|	Clearly visible but small|
+|5.5	|Faintest naked-eye star|	Tiny, barely visible|
+|6+	|Too faint to see	|Invisible to naked eye |
+
+### How You Use It in Your App
+In your drawing code, magnitude drives two visual properties at once:
+
+1 — Size (via sizeForType):
+
+```dart
+// Lower magnitude → bigger star shape
+return (5.5 - magnitude).clamp(1.5, 7.0);
+````
+
+2 — Glow (you already have this!):
+
+```dart
+// Only very bright stars (mag < 2.0) get a glow effect
+if (obj.type == 'star' && (obj.magnitude ?? 99) < 2.0) {
+  // draws the blur glow behind the star
+}
+```
