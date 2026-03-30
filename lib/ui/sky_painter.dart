@@ -70,63 +70,129 @@ class SkyPainter extends CustomPainter {
     _drawCompass(canvas, size); // 6. Compass always on top
   }
 
-    // --------------- Draw Background ------------
-
+  // --------------- Draw Background ------------
   void _drawBackground(Canvas canvas, Size size) {
-    // Dynamic horizon (0° = horizon line)
     final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
-    
-    // Sky gradient (always top to horizon)
+
+    // ☀️ SKY — deep space → warm sunset glow near horizon
     final skyGradient = LinearGradient(
       begin: Alignment.topCenter,
-      end: Alignment.center,
-      colors: [Color(0xFF02040F), Color(0xFF0a0a1e)], // space → horizon edge
-    );
-
-    // DARKER gradient ground — from horizon to bottom
-    final groundGradient = LinearGradient(
-      begin: Alignment.center,
       end: Alignment.bottomCenter,
-      colors: [
-        Color(0xFF0a0a1e),  // Very dark blue at horizon
-        Color(0xFF08101a),  // Darker blue 
-        Color(0xFF000000),  // Pure black bottom
+      colors: const [
+        Color(0xFF01010A),  // Deep space black
+        Color(0xFF0D0B2A),  // Dark indigo
+        Color(0xFF1B1040),  // Deep purple
+        Color(0xFF3B1F5E),  // Purple
       ],
-      stops: const [0.0, 0.6, 1.0],
+      stops: const [0.0, 0.30, 0.70, 1.0],
     );
 
-    // Sky: top → horizon
     final skyPaint = Paint()
-      ..shader = skyGradient.createShader(Rect.fromLTWH(0, 0, size.width, horizonY));
+      ..shader = skyGradient.createShader(
+          Rect.fromLTWH(0, 0, size.width, horizonY));
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, horizonY), skyPaint);
 
-    // Ground: horizon → bottom (covers all negative alt objects)
+    // 🌍 GROUND — warm glow at horizon fading to dark earth
+    final groundGradient = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: const [
+        Color.fromARGB(255, 47, 21, 8),  // Dark reddish-brown
+        Color(0xFF1A0A05),  // Very dark earth
+        Color(0xFF000000),  // Black bottom
+      ],
+      stops: const [0.0, 0.40, 1.0],
+    );
+
     final groundPaint = Paint()
-      ..shader = groundGradient.createShader(Rect.fromLTWH(0, horizonY, size.width, size.height));
-    canvas.drawRect(Rect.fromLTWH(0, horizonY, size.width, size.height), groundPaint);
+      ..shader = groundGradient.createShader(
+          Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY));
+    canvas.drawRect(
+        Rect.fromLTWH(0, horizonY, size.width, size.height - horizonY),
+        groundPaint);
   }
 
-  // --------------- Draw Horizon ------------
-
-  void _drawHorizon(Canvas canvas, Size size) {
-    final double horizonY = (0.5 + phoneAltitude / fov) * size.height; // moves with tilt
+  // void _drawBackground(Canvas canvas, Size size) {
+  //   // Dynamic horizon (0° = horizon line)
+  //   final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
     
-    final linePaint = Paint()
-      ..color = Colors.white24
-      ..strokeWidth = 2.0;
+  //   // Sky gradient (always top to horizon)
+  //   final skyGradient = LinearGradient(
+  //     begin: Alignment.topCenter,
+  //     end: Alignment.center,
+  //     colors: [Color(0xFF02040F), Color(0xFF0a0a1e)], // space → horizon edge
+  //   );
 
-    canvas.drawLine(Offset(0, horizonY), Offset(size.width, horizonY), linePaint);
+  //   // DARKER gradient ground — from horizon to bottom
+  //   final groundGradient = LinearGradient(
+  //     begin: Alignment.center,
+  //     end: Alignment.bottomCenter,
+  //     colors: [
+  //       Color(0xFF0a0a1e),  // Very dark blue at horizon
+  //       Color(0xFF08101a),  // Darker blue 
+  //       Color(0xFF000000),  // Pure black bottom
+  //     ],
+  //     stops: const [0.0, 0.6, 1.0],
+  //   );
 
+  //   // Sky: top → horizon
+  //   final skyPaint = Paint()
+  //     ..shader = skyGradient.createShader(Rect.fromLTWH(0, 0, size.width, horizonY));
+  //   canvas.drawRect(Rect.fromLTWH(0, 0, size.width, horizonY), skyPaint);
+
+  //   // Ground: horizon → bottom (covers all negative alt objects)
+  //   final groundPaint = Paint()
+  //     ..shader = groundGradient.createShader(Rect.fromLTWH(0, horizonY, size.width, size.height));
+  //   canvas.drawRect(Rect.fromLTWH(0, horizonY, size.width, size.height), groundPaint);
+  // }
+
+  // --------------- Draw Horizon ------------
+  void _drawHorizon(Canvas canvas, Size size) {
+    final double horizonY = (0.5 + phoneAltitude / fov) * size.height;
+
+    // Soft glowing horizon line
+    final glowLinePaint = Paint()
+      ..color = const Color(0x44FF8030)  // Orange glow
+      ..strokeWidth = 2.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+    canvas.drawLine(
+        Offset(0, horizonY), Offset(size.width, horizonY), glowLinePaint);
+
+    // HORIZON label — subtle and warm toned
     final textPainter = TextPainter(
       text: const TextSpan(
         text: 'HORIZON',
-        style: TextStyle(color: Colors.white38, fontSize: 11),
+        style: TextStyle(
+          color: Color(0x88FFAA55),  // Warm orange, faded
+          fontSize: 10,
+          letterSpacing: 2.5,
+          fontWeight: FontWeight.w300,
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
 
-    textPainter.paint(canvas, Offset(10, horizonY + 4));
+    textPainter.paint(canvas, Offset(12, horizonY + 5));
   }
+  // void _drawHorizon(Canvas canvas, Size size) {
+  //   final double horizonY = (0.5 + phoneAltitude / fov) * size.height; // moves with tilt
+    
+  //   final linePaint = Paint()
+  //     ..color = Colors.white24
+  //     ..strokeWidth = 2.0;
+
+  //   canvas.drawLine(Offset(0, horizonY), Offset(size.width, horizonY), linePaint);
+
+  //   final textPainter = TextPainter(
+  //     text: const TextSpan(
+  //       text: 'HORIZON',
+  //       style: TextStyle(color: Colors.white38, fontSize: 11),
+  //     ),
+  //     textDirection: TextDirection.ltr,
+  //   )..layout();
+
+  //   textPainter.paint(canvas, Offset(10, horizonY + 4));
+  // }
 
   // --------------- Draw Constellation Lines from JSON ------------
 
