@@ -68,6 +68,7 @@ class CelestialRepository {
         final decDeg  = double.tryParse(row[8].trim()) ?? 0.0;   // col 8 = "dec" in degrees
         final name    = row[6].trim();  // "proper"
 
+
         if (!_constellations.contains(con)) continue;
         if (name.isEmpty) continue;  // skip stars with no proper name
 
@@ -78,11 +79,12 @@ class CelestialRepository {
 
         final az = coords['azimuth'] ?? 0.0;
         final alt = coords['altitude'] ?? 0.0;
+        final conFullName = SkyUtils.constellationNames[con] ?? con.toUpperCase();
 
         final nameDesc = SkyUtils.descriptionFor(name.toLowerCase());
         final description = nameDesc.isNotEmpty 
           ? nameDesc 
-          : 'A star in the ${con.toUpperCase()} constellation';
+          : 'A star in the $conFullName constellation';
 
         stars.add(CelestialObject(
           id: 'star_$processed',

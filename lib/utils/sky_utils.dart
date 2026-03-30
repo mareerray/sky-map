@@ -61,6 +61,15 @@ class SkyUtils {
     return path;
   }
 
+  static const Map<String, String> constellationNames = {
+    'ori': 'Orion',
+    'uma': 'Ursa Major',
+    'cas': 'Cassiopeia',
+    'leo': 'Leo',
+    'cyg': 'Cygnus',
+    'gem': 'Gemini',
+  };
+
   // 📝 Descriptions for each body
   static String descriptionFor(String id) {
     const descriptions = {
@@ -98,7 +107,7 @@ class SkyUtils {
       'iota cygni':   'A blue-white star in the northern wing of Cygnus.',
       'kappa cygni':  'An orange giant near the tip of Cygnus\'s northern wing.',
       'eta cygni':    'An orange giant star in the body of Cygnus.',
-      'albireo':      'A famous double star — one gold, one blue — marking the beak of Cygnus.',
+      'albireo b':      'A famous double star — one gold, one blue — marking the beak of Cygnus.',
       'gienah':       'An orange giant marking the southern wing of Cygnus.',
       'zeta cygni':   'A yellow giant star in the southern wing of Cygnus.',
       'mu cygni':     'A binary star system at the tip of Cygnus\'s southern wing.',
@@ -144,7 +153,7 @@ class SkyUtils {
 
       // 👯 GEMINI
       'pollux':               'The brightest star in Gemini. An orange giant with a confirmed planet orbiting it.',
-      'castor':               'Appears as one star but is actually a system of six stars.',
+      'castor b':               'Appears as one star but is actually a system of six stars.',
       'upsilon geminorum':    'An orange giant in the body of Gemini.',
       'kappa geminorum':      'An orange giant star in the southern foot of Gemini.',
       'iota geminorum':       'A yellow giant in the arm of one of the Gemini twins.',
