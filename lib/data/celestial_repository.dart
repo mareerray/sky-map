@@ -52,7 +52,7 @@ class CelestialRepository {
     final List<CelestialObject> stars = [];
     int processed = 0;
 
-    for (int i = 1; i < lines.length && processed < 50000; i++) {
+    for (int i = 1; i < lines.length && processed < 15000; i++) {
 
       final line = lines[i].trim();
       if (line.isEmpty || !line.contains(',')) continue;
@@ -68,11 +68,11 @@ class CelestialRepository {
         final name    = row[6].trim();  // "proper"
 
         if (!_constellations.contains(con)) continue;
+        if (name.isEmpty) continue;  // skip stars with no proper name
 
         // 🆕 Tiered brightness filtering
         if (mag > 5.2) continue; // Only stars brighter than mag 4.5
 
-        final starType = 'star';
         final coords = astro.getStarHorizontal(raHours: raHours, decDeg: decDeg);
 
         final az = coords['azimuth'] ?? 0.0;
@@ -80,8 +80,8 @@ class CelestialRepository {
 
         stars.add(CelestialObject(
           id: 'star_$processed',
-          name: name.isEmpty ? con.toUpperCase() : name,
-          type: starType,
+          name: name,
+          type: 'star',
           description: 'A star in the $con constellation',
           azimuth: az,
           altitude: alt,
@@ -147,69 +147,86 @@ class CelestialRepository {
   }
 
   // ------------------- Group Stars into Constellations ---------------------
-  
   List<CelestialObject> _groupStarsByConstellation(
     List<CelestialObject> stars,
     Map<String, List<List<String>>> lines,
   ) {
     final result = <CelestialObject>[];
-    
-    final conData = {
-      'ori': lines['ori'] ?? [],
-      'uma': lines['uma'] ?? [],
-      'cas': lines['cas'] ?? [],
-      'leo': lines['leo'] ?? [],
-      'cyg': lines['cyg'] ?? [],
-      'gem': lines['gem'] ?? [],
-    };
-    
-    // Full names
+
+    // Build a lookup map: lowercase name → star object
+    // This makes finding stars by name fast and easy
+    final starMap = <String, CelestialObject>{};
+    for (final star in stars) {
+      starMap[star.name.toLowerCase()] = star;
+    }
+
     final fullNames = {
       'ori': 'ORION',
       'uma': 'URSA MAJOR',
-      'cas': 'CASSIOPEIA', 
+      'cas': 'CASSIOPEIA',
       'leo': 'LEO',
       'cyg': 'CYGNUS',
       'gem': 'GEMINI',
     };
-    
-    for (final entry in conData.entries) {
-      final conAbbr = entry.key.toUpperCase();
-      final conName = fullNames[entry.key] ?? conAbbr;  // Full or abbr
-      final conLines = entry.value;
-      
-      final Set<String> starNames = {};
-      for (final line in conLines) {
-        starNames.add(line[0]);
-        if (line.length > 1) starNames.add(line[1]);
-      }
-      
+
+    for (final conKey in _constellations) {
+      final conLines = lines[conKey] ?? [];
+      final conName = fullNames[conKey] ?? conKey.toUpperCase();
+
+      // Build resolved line pairs: each pair is two star names that EXIST in our map
+      final resolvedLines = <List<String>>[];
+
+      // Also collect star positions for center calculation
       double totalAz = 0, totalAlt = 0;
       int count = 0;
-      for (final starName in starNames) {
-        final star = stars.firstWhereOrNull((s) => 
-          s.name.toLowerCase().contains(starName.toLowerCase()));
-        if (star != null && star.altitude > -50) {
-          totalAz += star.azimuth;
-          totalAlt += star.altitude;
-          count++;
+      final Set<String> seenStars = {};
+
+      for (final pair in conLines) {
+        if (pair.length < 2) continue;
+
+        final nameA = pair[0].toLowerCase();
+        final nameB = pair[1].toLowerCase();
+
+        final starA = starMap[nameA];
+        final starB = starMap[nameB];
+
+        // Temporarily log missing stars so you can fix the JSON names
+        if (starA == null) print('⚠️ Not found: $nameA ($conKey)');
+        if (starB == null) print('⚠️ Not found: $nameB ($conKey)');
+
+        // Only draw the line if BOTH stars were found and loaded
+        if (starA != null && starB != null) {
+          resolvedLines.add([nameA, nameB]);
+
+          // Add to center calculation (avoid counting same star twice)
+          if (!seenStars.contains(nameA)) {
+            totalAz += starA.azimuth;
+            totalAlt += starA.altitude;
+            count++;
+            seenStars.add(nameA);
+          }
+          if (!seenStars.contains(nameB)) {
+            totalAz += starB.azimuth;
+            totalAlt += starB.altitude;
+            count++;
+            seenStars.add(nameB);
+          }
         }
       }
-      
+
       if (count > 0) {
-        final avgAz = totalAz / count;
-        final avgAlt = totalAlt / count;
-        
         result.add(CelestialObject(
-          id: 'constellation_$conAbbr',
-          name: conName,  // "Orion" not "ORI"
+          id: 'constellation_${conKey.toUpperCase()}',
+          name: conName,
           type: 'constellation',
-          azimuth: avgAz,
-          altitude: avgAlt,
+          azimuth: totalAz / count,
+          altitude: totalAlt / count,
           description: '$conName constellation',
+          lines: resolvedLines,  
         ));
       }
     }
+
     return result;
   }
 }
