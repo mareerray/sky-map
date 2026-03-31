@@ -11,7 +11,7 @@ class CelestialRepository {
   final _api = AstronomyApiService();
 
   // Your 10 chosen constellations
-  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql', 'aqr', 'cet'};
+  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql', 'aqr', 'cet', 'her'};
 
   // --------------------- Load Objects from API ---------------------
 
@@ -77,7 +77,7 @@ class CelestialRepository {
         // Keep if bright enough OR if it's a required constellation line star
         final isRequired = mustKeepStars.contains(name.toLowerCase());
         if (mag > 6 && !isRequired) continue;
-        
+
         final coords = astro.getStarHorizontal(raHours: raHours, decDeg: decDeg);
 
         final az = coords['azimuth'] ?? 0.0;
@@ -183,6 +183,7 @@ class CelestialRepository {
       'aql': 'AQUILA',
       'aqr': 'AQUARIUS',
       'cet': 'CETUS',
+      'her': 'HERCULIS',
     };
 
     for (final conKey in _constellations) {

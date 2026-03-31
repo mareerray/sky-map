@@ -249,7 +249,7 @@ class SkyPainter extends CustomPainter {
 
       final bool isSelected = selectedObject != null && selectedObject!.id == obj.id;
 
-      if (alwaysShowLabel || isSelected) {
+      if (alwaysShowLabel) {
         final textPainter = TextPainter(
           text: TextSpan(
             text: obj.name,
@@ -281,9 +281,10 @@ class SkyPainter extends CustomPainter {
 
   void _drawConstellationLabels(Canvas canvas, Size size) {
   final labelStyle = GoogleFonts.poppins(
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: FontWeight.bold,
     color: const Color(0xFFCDA882),
+    letterSpacing: 1.2,
   );
 
   final constName = {
@@ -297,6 +298,7 @@ class SkyPainter extends CustomPainter {
     'aql': 'Aquila',
     'aqr': 'Aquarius',
     'cet': 'Cetus',
+    'her': 'Hercules',
   };
 
   for (final entry in constName.entries) {
@@ -312,9 +314,10 @@ class SkyPainter extends CustomPainter {
     'cyg': 'alpha cygni',     
     'gem': 'pollux',    
     'lib': 'zubeneschamali', 
-    'aql': 'altair',    
+    'aql': 'delta aquilae',    
     'aqr': 'sadalsuud',
-    'cet': 'menkar',     
+    'cet': 'mira',     
+    'her': 'zeta herculis',
   }[acronym];
 
     if (targetStarName == null) continue;
@@ -339,6 +342,23 @@ class SkyPainter extends CustomPainter {
       text: TextSpan(text: fullName, style: labelStyle),
       textDirection: TextDirection.ltr,
     )..layout();
+
+    // 🆕 Draw pill background behind text
+    final padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+    final bgRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+        pos.dx - textPainter.width / 2 - padding.left,
+        pos.dy - textPainter.height - padding.top,
+        textPainter.width + padding.left + padding.right,
+        textPainter.height + padding.top + padding.bottom,
+      ),
+      const Radius.circular(6),
+    );
+
+    canvas.drawRRect(
+      bgRect,
+      Paint()..color = const Color(0xFF1A1A2E).withValues(alpha:0.6), // 🆕 dark bg
+    );
 
     textPainter.paint(
       canvas,

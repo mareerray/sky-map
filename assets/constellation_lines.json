@@ -145,5 +145,26 @@
     ["tau ceti", "sigma ceti"],
     ["sigma ceti", "pi ceti"],
     ["diphda", "deneb kaitos shemali"]
+  ],
+  "her": [
+    ["gamma herculis", "kornephoros"],
+    ["kornephoros","zeta herculis"],
+    ["zeta herculis","eta herculis"],
+    ["eta herculis","sigma herculis"],
+    ["sigma herculis","tau herculis"],
+    ["tau herculis","phi herculis"],
+    ["phi herculis","chi herculis"],
+    ["eta herculis","pi herculis"],
+    ["pi herculis","69 herculis"],
+    ["69 herculis","rho herculis"],
+    ["rho herculis","theta herculis"],
+    ["theta herculis","iota herculis"],
+    ["pi herculis","epsilon herculis"],
+    ["epsilon herculis","zeta herculis"],
+    ["epsilon herculis","maasym"],
+    ["maasym","sarin"],
+    ["maasym","mu herculis"],
+    ["mu herculis","xi herculis"],
+    ["xi herculis","omicron herculis"]
   ]
 }

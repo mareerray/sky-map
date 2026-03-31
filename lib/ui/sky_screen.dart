@@ -4,6 +4,7 @@ import 'package:sky_map/bloc/sky_event.dart';
 import '../bloc/sky_bloc.dart';
 import '../bloc/sky_state.dart';
 import '../models/celestial_object.dart';
+import '../utils/sky_utils.dart';
 import 'sky_painter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,6 +17,8 @@ class SkyScreen extends StatefulWidget {
 
 class _SkyScreenState extends State<SkyScreen> {
   CelestialObject? _selectedObject;
+  String? imageAsset;
+
 
   @override
   void initState() {
@@ -33,14 +36,19 @@ class _SkyScreenState extends State<SkyScreen> {
     double nearestDistance = double.infinity;
 
     for (final obj in objects) {
-      // Skip constellations — they aren't tappable dots
-      if (obj.type == 'constellation') continue;
+
+      // Only planets and constellations are tappable — skip stars
+      if (obj.type == 'star') continue;
 
       final screenPos = SkyPainter.toScreen(obj.azimuth, obj.altitude, size, phoneAzimuth, phoneAltitude);
+
       if (screenPos == null) continue;
+
+      // 🆕 Different tap radius for constellations vs stars
+      final tapRadius = obj.type == 'constellation' ? 120.0 : 30.0;
       final dist = (screenPos - tapPos).distance;
 
-      if (dist < nearestDistance) {
+      if (dist < tapRadius && dist < nearestDistance) {
         nearestDistance = dist;
         nearest = obj;
       }
@@ -52,8 +60,10 @@ class _SkyScreenState extends State<SkyScreen> {
     setState(() {
       if (nearest != null && nearestDistance <= maxTapRadius) {
         _selectedObject = nearest; // close enough → select it
+        imageAsset = SkyUtils.planetImageAssets[_selectedObject!.id];
       } else {
         _selectedObject = null;    // too far → deselect (tap empty sky)
+        imageAsset = null;
       }
     });  
   }
@@ -63,7 +73,7 @@ class _SkyScreenState extends State<SkyScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60), // Fixed height
+        preferredSize: Size.fromHeight(60), 
         child: BlocBuilder<SkyBloc, SkyState>(
           builder: (context, state) {
             return AppBar(
@@ -75,7 +85,7 @@ class _SkyScreenState extends State<SkyScreen> {
                   // Title
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.only(left: 16), // ← Space on left
+                      padding: EdgeInsets.only(left: 16), 
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Sky Map',
@@ -163,13 +173,40 @@ class _SkyScreenState extends State<SkyScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              if (imageAsset != null)
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12),  
+                                    topRight: Radius.circular(12),
+                                  ),
+                                  child: SizedBox(
+                                    height: 100,                    
+                                    width: double.infinity,         
+                                    child: Image.asset(
+                                      imageAsset!,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                )
+                                else if (_selectedObject!.type == 'constellation')
+                                  Container(
+                                height: 60,
+                                alignment: Alignment.centerLeft,
+                                child: const Icon(
+                                  Icons.auto_awesome,           // ✨ star sparkle icon
+                                  color: Color(0xFFCDA882),     // same gold as your labels
+                                  size: 36,
+                                ),
+                              ),
                               Text(
                                 _selectedObject!.name,
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                _selectedObject!.description,
+                                _selectedObject!.type == 'constellation'
+                                  ? SkyUtils.constellationDescriptionFor(_selectedObject!.id.replaceAll('constellation_', '').toLowerCase())
+                                  : _selectedObject!.description,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
