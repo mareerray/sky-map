@@ -14,6 +14,9 @@ class SkyPainter extends CustomPainter {
   final double phoneAltitude;
   static const double fov = 60.0;
 
+  // static int _paintCount = 0;
+  // static DateTime _lastFpsTime = DateTime.now();
+
   SkyPainter({
     required this.objects, 
     this.selectedObject, 
@@ -53,6 +56,19 @@ class SkyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // _paintCount++;
+
+    // final now = DateTime.now();
+    // final elapsedMs = now.difference(_lastFpsTime).inMilliseconds;
+
+    // if (elapsedMs >= 1000) {
+    //   final fps = _paintCount * 1000 / elapsedMs;
+    //   debugPrint('SkyPainter FPS: ${fps.toStringAsFixed(1)}');
+
+    //   _paintCount = 0;
+    //   _lastFpsTime = now;
+    // }
+
     _drawBackground(canvas, size); // 1. Draw sky + ground
     _drawHorizon(canvas, size); // 2. Horizon line
     _drawConstellationLines(canvas, size); // 3. Lines between stars

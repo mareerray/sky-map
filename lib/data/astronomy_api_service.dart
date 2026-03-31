@@ -50,7 +50,7 @@ class AstronomyApiService {
 
     final data = json.decode(response.body);
     // 🔍 TEMPORARY DEBUG - remove after fixing
-    print('🔍 RAW RESPONSE: ${response.body}');
+    // print('🔍 RAW RESPONSE: ${response.body}');
 
     final rows = data['data']['table']['rows'] as List;
     final List<CelestialObject> result = [];

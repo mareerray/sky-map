@@ -22,9 +22,12 @@ class SensorService {
 
   double _smoothAzimuth  = 0;
   double _smoothAltitude = 0;
-  double _lastEmittedAzimuth  = -999; 
-  double _lastEmittedAltitude = -999; 
-  static const double _alpha = 0.15; // 0.0 = very smooth, 1.0 = raw/jumpy
+
+  double _lastEmittedAzimuth  = -999.00; 
+  double _lastEmittedAltitude = -999.00; 
+  DateTime? _lastEmitTime;
+
+  static const double _alpha = 0.08; // 0.0 = very smooth, 1.0 = raw/jumpy
   // _alpha = 0.15 means each new reading only contributes 15% to the output 
 
   final _controller = StreamController<SensorData>.broadcast();
@@ -45,7 +48,7 @@ class SensorService {
     });
 
     _magSub = magnetometerEventStream(
-      samplingPeriod: const Duration(milliseconds: 100), // ← same
+      samplingPeriod: const Duration(milliseconds: 100), 
     ).listen((event) {
       _magnetometer = [event.x, event.y, event.z];
       _update();
@@ -56,8 +59,7 @@ class SensorService {
     final ax = _accelerometer[0];
     final ay = _accelerometer[1];
     final az = _accelerometer[2];
-    // 👇 Add this temporarily
-    // print('📱 ax=${ ax.toStringAsFixed(1)} ay=${ay.toStringAsFixed(1)} az=${az.toStringAsFixed(1)}');
+
     final mx = _magnetometer[0];
     final my = _magnetometer[1];
     final mz = _magnetometer[2];
@@ -74,7 +76,6 @@ class SensorService {
     final double accNorm = math.sqrt(ax*ax + ay*ay + az*az);
     final double axN = ax / accNorm;
     final double ayN = ay / accNorm;
-    // final double azN = az / accNorm;
 
     // Tilt-compensated magnetic North components
     final double pitch = math.asin((-axN).clamp(-1.0, 1.0)); // Tilt forward around Y-axis
@@ -97,22 +98,30 @@ class SensorService {
 
     // ------ Smooth it out to prevent jitter -----------------
     double azDelta = ((azimuth - _smoothAzimuth) + 540) % 360 - 180; // finds the shortest path between two angles
-    _smoothAzimuth = (_smoothAzimuth + _alpha * azDelta + 360) % 360;    
+    final azChange = azDelta.abs();
+    if (azChange > 0.5) { // only smooth if changed >0.5°
+      _smoothAzimuth = (_smoothAzimuth + _alpha * azDelta + 360) % 360;
+    }
     _smoothAltitude = _alpha * altitude + (1 - _alpha) * _smoothAltitude;
 
-    // Only emit if something changed more than 1 degree
-    final azDiff  = (_smoothAzimuth  - _lastEmittedAzimuth).abs();
+    final azDiff =
+    ((_smoothAzimuth - _lastEmittedAzimuth) + 540) % 360 - 180;
     final altDiff = (_smoothAltitude - _lastEmittedAltitude).abs();
 
-    // Only send a new update if something changed by more than 2.5°, avoiding unnecessary redraws
-    if (azDiff > 2.5 || altDiff > 2.5) {
-      _lastEmittedAzimuth  = _smoothAzimuth;
-      _lastEmittedAltitude = _smoothAltitude;
+    final now = DateTime.now();
+    final shouldEmitByTime = _lastEmitTime == null ||
+        now.difference(_lastEmitTime!).inMilliseconds >= 100;
+    final shouldEmitByMovement =
+        azDiff.abs() > 1.5 || altDiff > 1.5;
 
-      // print('📡 Sensor update: az=$azimuth alt=$altitude'); 
+    if (shouldEmitByMovement || shouldEmitByTime) {
+      _lastEmittedAzimuth = _smoothAzimuth;
+      _lastEmittedAltitude = _smoothAltitude;
+      _lastEmitTime = now;
+
       _controller.add(SensorData(
         azimuth: _smoothAzimuth, 
-        altitude: _smoothAltitude, // Adjust so 0° = horizon, +90° = straight up
+        altitude: _smoothAltitude, 
       ));
     }
   }
