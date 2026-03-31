@@ -1,6 +1,5 @@
 // GPS → AstronomyAPI → constellations + background stars → done ✅
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/celestial_object.dart';
@@ -11,8 +10,8 @@ import 'astro_calculator.dart';
 class CelestialRepository {
   final _api = AstronomyApiService();
 
-  // Your 8 chosen constellations
-  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql'};
+  // Your 10 chosen constellations
+  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql', 'aqr', 'cet'};
 
   // --------------------- Load Objects from API ---------------------
 
@@ -51,6 +50,9 @@ class CelestialRepository {
     // print('HEADER: ${lines[0]}');
 
     final List<CelestialObject> stars = [];
+    const mustKeepStars = {
+      'mira', // Cetus - variable star, can be dimmer than mag 6
+    };
     int processed = 0;
 
     for (int i = 1; i < lines.length && processed < 15000; i++) {
@@ -72,9 +74,10 @@ class CelestialRepository {
         if (!_constellations.contains(con)) continue;
         if (name.isEmpty) continue;  // skip stars with no proper name
 
-        // 🆕 Tiered brightness filtering
-        if (mag > 6) continue; // Only stars brighter than mag 6
-
+        // Keep if bright enough OR if it's a required constellation line star
+        final isRequired = mustKeepStars.contains(name.toLowerCase());
+        if (mag > 6 && !isRequired) continue;
+        
         final coords = astro.getStarHorizontal(raHours: raHours, decDeg: decDeg);
 
         final az = coords['azimuth'] ?? 0.0;
@@ -178,6 +181,8 @@ class CelestialRepository {
       'gem': 'GEMINI',
       'lib': 'LIBRA',
       'aql': 'AQUILA',
+      'aqr': 'AQUARIUS',
+      'cet': 'CETUS',
     };
 
     for (final conKey in _constellations) {

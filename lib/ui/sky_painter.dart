@@ -295,21 +295,26 @@ class SkyPainter extends CustomPainter {
     'gem': 'Gemini',
     'lib': 'Libra',
     'aql': 'Aquila',
+    'aqr': 'Aquarius',
+    'cet': 'Cetus',
   };
 
   for (final entry in constName.entries) {
     final acronym = entry.key;
     final fullName = entry.value;
 
+  // Find the brightest star in this constellation to anchor the label
   final targetStarName = {
     'ori': 'betelgeuse',
     'uma': 'dubhe',
-    'cas': 'schedar',   // brightest in Cassiopeia
-    'leo': 'regulus',   // brightest in Leo
-    'cyg': 'alpha cygni',     // brightest in Cygnus
-    'gem': 'pollux',    // brightest in Gemini
-    'lib': 'zubeneschamali', // brightest in Libra
-    'aql': 'altair',    // brightest in Aquila
+    'cas': 'schedar',   
+    'leo': 'regulus',   
+    'cyg': 'alpha cygni',     
+    'gem': 'pollux',    
+    'lib': 'zubeneschamali', 
+    'aql': 'altair',    
+    'aqr': 'sadalsuud',
+    'cet': 'menkar',     
   }[acronym];
 
     if (targetStarName == null) continue;

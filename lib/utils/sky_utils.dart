@@ -70,6 +70,8 @@ class SkyUtils {
     'gem': 'Gemini',
     'lib': 'Libra',
     'aql': 'Aquila',
+    'aqr': 'Aquarius',
+    'cet': 'Cetus',
   };
 
   // 📝 Descriptions for each body

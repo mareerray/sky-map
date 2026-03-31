@@ -107,5 +107,43 @@
     ["delta aquilae", "eta aquilae"],
     ["eta aquilae", "theta aquilae"],
     ["delta aquilae", "lambda aquilae"]
+  ],
+  "aqr": [  
+    ["albali", "sadalsuud"],
+    ["sadalsuud", "sadalmelik"],
+    ["sadalmelik", "ancha"],
+    ["ancha", "iota aquarii"],
+    ["ancha", "sigma aquarii"],
+    ["sigma aquarii", "tau aquarii"],
+    ["tau aquarii", "skat"],
+    ["skat", "safina"],
+    ["sadalmelik", "sadachbia"],
+    ["sadachbia", "sadaltager"],
+    ["sadaltager", "eta aquarii"],
+    ["eta aquarii", "lambda aquarii"],
+    ["lambda aquarii", "psi aquarii"],
+    ["psi aquarii", "98 aquarii"]
+  ],
+  "cet": [
+    ["65 ceti", "73 ceti"],
+    ["73 ceti", "nu ceti"],
+    ["73 ceti", "mu ceti"],
+    ["nu ceti", "kaffaljidhma"],
+    ["kaffaljidhma", "menkar"],
+    ["menkar", "lambda ceti"],
+    ["lambda ceti", "mu ceti"],
+    ["kaffaljidhma", "delta ceti"],
+    ["delta ceti", "mira"],
+    ["mira", "epsilon ceti"],
+    ["epsilon ceti", "pi ceti"],
+    ["epsilon ceti", "rho ceti"],
+    ["rho ceti", "baten kaitos"],
+    ["baten kaitos", "theta ceti"],
+    ["theta ceti", "deneb algenubi"],
+    ["deneb algenubi", "diphda"],
+    ["diphda", "tau ceti"],
+    ["tau ceti", "sigma ceti"],
+    ["sigma ceti", "pi ceti"],
+    ["diphda", "deneb kaitos shemali"]
   ]
 }

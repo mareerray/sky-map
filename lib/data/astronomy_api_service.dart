@@ -21,7 +21,7 @@ class AstronomyApiService {
     required double longitude,
     required double elevation,
   }) async {
-    final now  = DateTime.now().toUtc();
+    final now  = DateTime.now();
     final date = '${now.year}-'
         '${now.month.toString().padLeft(2,'0')}-'
         '${now.day.toString().padLeft(2,'0')}';
@@ -49,6 +49,8 @@ class AstronomyApiService {
     }
 
     final data = json.decode(response.body);
+    // 🔍 TEMPORARY DEBUG - remove after fixing
+    print('🔍 RAW RESPONSE: ${response.body}');
 
     final rows = data['data']['table']['rows'] as List;
     final List<CelestialObject> result = [];

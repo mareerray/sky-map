@@ -25,7 +25,7 @@ class SkyBloc extends Bloc<SkyEvent, SkyState> {
       final lines = await repository.loadConstellationLines();  
       final imageNames = ['sun', 'mercury', 'venus', 'mars',
                         'jupiter', 'saturn', 'uranus', 'neptune',
-                        'moon'];
+                        'moon', 'pluto'];
       final Map<String, ui.Image> planetImages = {};
         for (final name in imageNames) {
           final img = await _loadImage('assets/images/$name.png');
@@ -52,7 +52,7 @@ class SkyBloc extends Bloc<SkyEvent, SkyState> {
         celestialObjects: current.celestialObjects,
         phoneAzimuth: event.azimuth,
         phoneAltitude: event.altitude,
-        constellationLines: current.constellationLines,  // Keep lines
+        constellationLines: current.constellationLines,  
         planetImages: current.planetImages,
       ));
     }

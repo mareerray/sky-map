@@ -159,11 +159,6 @@ class _SkyScreenState extends State<SkyScreen> {
                         right: 0,
                         child: Container(
                           padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.8),
-                            borderRadius: BorderRadius.circular(8),
-                            // border: Border.all(color: Colors.white24),
-                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
