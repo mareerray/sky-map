@@ -23,7 +23,7 @@ class _SkyScreenState extends State<SkyScreen> {
   @override
   void initState() {
     super.initState();
-    // 🆕 TRIGGER DATA LOADING!
+    // Trigger data loading after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SkyBloc>().add(LoadSkyObjects());
     });
@@ -54,11 +54,8 @@ class _SkyScreenState extends State<SkyScreen> {
       }
     }
 
-    const double maxTapRadius = 40.0; // max distance in pixels
-
-
     setState(() {
-      if (nearest != null && nearestDistance <= maxTapRadius) {
+      if (nearest != null) {
         _selectedObject = nearest; // close enough → select it
         imageAsset = SkyUtils.planetImageAssets[_selectedObject!.id];
       } else {

@@ -3,7 +3,7 @@ import 'package:astronomia/astronomia.dart';
 import 'package:astronomia/planetposition.dart';
 import 'package:astronomia/elliptic.dart' as elliptic;
 import 'package:astronomia/solar.dart' as solar;
-import 'package:astronomia/moonposition.dart' as moonPos;
+import 'package:astronomia/moonposition.dart' as moon_position;
 import 'package:astronomia/coord.dart' as coord;
 
 class AstroCalculator {
@@ -66,7 +66,7 @@ class AstroCalculator {
 
   Map<String, double> getMoon() {
     final jd = _toJD(DateTime.now());
-    final pos = moonPos.position(jd);
+    final pos = moon_position.position(jd);
     final eps = toRad(23.439);
     final eq = coord.eclToEq(pos.lon, pos.lat, math.sin(eps), math.cos(eps));
     return _toHorizontal(eq.ra, eq.dec, jd);
@@ -94,19 +94,31 @@ class AstroCalculator {
   }
 }
 
-// This AstroCalculator already does exactly what you need:
-
-// - Takes your latitude / longitude
-
-// - Computes Julian Date and Local Sidereal Time
-
-// - Converts RA/Dec → Azimuth/Altitude in _toHorizontal
-
-// - Gives you Sun, Moon, Planets in horizontal coordinates
-// ​
-
-// So the best move now is:
-
-// - Use AstroCalculator._toHorizontal() for your stars from the CSV
-
-// - Keep using AstronomyAPI only if you want, but you could even drop it later and just use astronomia for everything
+/**
+ * AstroCalculator - Astronomical Position Calculator
+ * =================================================
+ *
+ * Converts equatorial coordinates (RA/Dec) to local horizon coordinates (Azimuth/Altitude)
+ * for a given observer location and time. Implements precise astronomical calculations
+ * including Local Sidereal Time (LST), Julian Date conversion, and equatorial-to-horizontal
+ * coordinate transformation.
+ *
+ * Primary use case: Transform HYG Database v3.2 star catalog (fixed RA/Dec) into real-time
+ * sky positions for interactive sky map applications.
+ *
+ * Features:
+ * - Sun, Moon, and major planet position calculations
+ * - Star catalog coordinate conversion (getStarHorizontal)
+ * - Location-aware (latitude/longitude)
+ * - Time-aware (current or specified DateTime)
+ * 
+ * Dependencies: astronomia package (professional astronomy library)
+ * 
+ * Usage:
+ * 
+ * final calc = AstroCalculator(latDeg: 60.17, lonDeg: 24.94); // Helsinki
+ * final starPos = calc.getStarHorizontal(raHours: 5.5, decDeg: 45.0);
+ * 
+ * Precision: Sub-arcminute accuracy suitable for visual astronomy applications.
+ * 
+ */

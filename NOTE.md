@@ -1,3 +1,16 @@
+📍 GPS: lat=60.1187943, lon=19.9461192
+🌟 Sun (id:sun) magnitude: -26.74917
+🌟 Moon (id:moon) magnitude: -8.96246
+🌟 Mercury (id:mercury) magnitude: 0.78568 
+🌟 Venus (id:venus) magnitude: -3.85289
+🌟 Mars (id:mars) magnitude: 1.18651
+🌟 Jupiter (id:jupiter) magnitude: -2.28169
+🌟 Saturn (id:saturn) magnitude: 0.78793
+🌟 Uranus (id:uranus) magnitude: 5.77124
+🌟 Neptune (id:neptune) magnitude: 7.95551
+🌟 Pluto (id:pluto) magnitude: 14.58575
+
+
 # The Final Wiring Diagram
 ```dart
 GPS → CelestialRepository → SkyBloc → StreamBuilder → CustomPaint(SkyPainter)

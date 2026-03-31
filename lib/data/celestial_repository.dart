@@ -1,5 +1,5 @@
-// GPS → AstronomyAPI → constellations + background stars → done ✅
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/celestial_object.dart';
@@ -10,7 +10,7 @@ import 'astro_calculator.dart';
 class CelestialRepository {
   final _api = AstronomyApiService();
 
-  // Your 10 chosen constellations
+  // 11 chosen constellations
   static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql', 'aqr', 'cet', 'her'};
 
   // --------------------- Load Objects from API ---------------------
@@ -24,6 +24,7 @@ class CelestialRepository {
       lonDeg: position.longitude
     );
     print('\x1b[36m📍 GPS: lat=${position.latitude}, lon=${position.longitude}\x1b[0m');
+
     // 2️⃣ Real positions from AstronomyAPI using GPS
     final List<CelestialObject> realObjects = await _api.fetchBodies(
       latitude:  position.latitude,
@@ -36,7 +37,7 @@ class CelestialRepository {
     final constellationLines = await loadConstellationLines();
     final groupedObjects = _groupStarsByConstellation(starObjects, constellationLines);
 
-    // Return SkyLoaded exactly like your state expects
+    // Return SkyLoaded exactly like the state expects
     return [...realObjects, ...groupedObjects, ...starObjects];
   }
 
@@ -63,12 +64,12 @@ class CelestialRepository {
       try {
         final row = _parseCsvLine(line);
         
-        // Exact column indexes from the header we saw
-        final con = row[29].trim().toLowerCase();  // "con"
-        final mag = double.tryParse(row[13].trim()) ?? 99.0;  // "mag"
-        final raHours = double.tryParse(row[7].trim()) ?? 0.0;   // col 7 = "ra" in HOURS
-        final decDeg  = double.tryParse(row[8].trim()) ?? 0.0;   // col 8 = "dec" in degrees
-        final name    = row[6].trim();  // "proper"
+        // Exact column indexes from the header in the CSV file
+        final con = row[29].trim().toLowerCase();  // "con" - constellation abbreviation
+        final mag = double.tryParse(row[13].trim()) ?? 99.0;  // "mag" - magnitude (brightness)
+        final raHours = double.tryParse(row[7].trim()) ?? 0.0;   // col 7 = "ra" in HOURS (0 to 24)
+        final decDeg  = double.tryParse(row[8].trim()) ?? 0.0;   // col 8 = "dec" in degrees (-90 to +90)
+        final name    = row[6].trim();  // "proper" - proper name (can be empty)
 
 
         if (!_constellations.contains(con)) continue;
@@ -153,7 +154,7 @@ class CelestialRepository {
       
       return lines;
     } catch (e) {
-      print('⚠️ Constellation lines failed: $e, using painter lines only');
+      // print('⚠️ Constellation lines failed: $e, using painter lines only');
       return {}; // Empty map = no crash
     }
   }
@@ -172,29 +173,19 @@ class CelestialRepository {
       starMap[star.name.toLowerCase()] = star;
     }
 
-    final fullNames = {
-      'ori': 'ORION',
-      'uma': 'URSA MAJOR',
-      'cas': 'CASSIOPEIA',
-      'leo': 'LEO',
-      'cyg': 'CYGNUS',
-      'gem': 'GEMINI',
-      'lib': 'LIBRA',
-      'aql': 'AQUILA',
-      'aqr': 'AQUARIUS',
-      'cet': 'CETUS',
-      'her': 'HERCULIS',
-    };
+    final fullNames = SkyUtils.constellationNames;
 
     for (final conKey in _constellations) {
       final conLines = lines[conKey] ?? [];
-      final conName = fullNames[conKey] ?? conKey.toUpperCase();
+      final conName = fullNames[conKey] ?? conKey;
 
       // Build resolved line pairs: each pair is two star names that EXIST in our map
       final resolvedLines = <List<String>>[];
 
       // Also collect star positions for center calculation
-      double totalAz = 0, totalAlt = 0;
+      double sumSin = 0;
+      double sumCos = 0;
+      double totalAlt = 0;
       int count = 0;
       final Set<String> seenStars = {};
 
@@ -207,23 +198,23 @@ class CelestialRepository {
         final starA = starMap[nameA];
         final starB = starMap[nameB];
 
-        // Temporarily log missing stars so you can fix the JSON names
-        if (starA == null) print('⚠️ Not found: $nameA ($conKey)');
-        if (starB == null) print('⚠️ Not found: $nameB ($conKey)');
-
         // Only draw the line if BOTH stars were found and loaded
         if (starA != null && starB != null) {
           resolvedLines.add([nameA, nameB]);
 
           // Add to center calculation (avoid counting same star twice)
           if (!seenStars.contains(nameA)) {
-            totalAz += starA.azimuth;
+            final azRad = starA.azimuth * math.pi / 180.0;
+            sumSin += math.sin(azRad);
+            sumCos += math.cos(azRad);
             totalAlt += starA.altitude;
             count++;
             seenStars.add(nameA);
           }
           if (!seenStars.contains(nameB)) {
-            totalAz += starB.azimuth;
+            final azRad = starB.azimuth * math.pi / 180.0;
+            sumSin += math.sin(azRad);
+            sumCos += math.cos(azRad);
             totalAlt += starB.altitude;
             count++;
             seenStars.add(nameB);
@@ -232,18 +223,22 @@ class CelestialRepository {
       }
 
       if (count > 0) {
-        result.add(CelestialObject(
-          id: 'constellation_${conKey.toUpperCase()}',
-          name: conName,
-          type: 'constellation',
-          azimuth: totalAz / count,
-          altitude: totalAlt / count,
-          description: '$conName constellation',
-          lines: resolvedLines,  
-        ));
+        double avgAz = math.atan2(sumSin / count, sumCos / count) * 180.0 / math.pi;
+        if (avgAz < 0) avgAz += 360;
+
+        result.add(
+          CelestialObject(
+            id: 'constellation_$conKey',
+            name: conName,
+            type: 'constellation',
+            azimuth: math.atan2(sumSin, sumCos) * 180.0 / math.pi,
+            altitude: totalAlt / count,
+            description: '$conName constellation',
+            lines: resolvedLines,  
+          )
+        );
       }
     }
-
     return result;
   }
 }
