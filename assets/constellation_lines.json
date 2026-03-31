@@ -89,5 +89,23 @@
     ["mebsuta", "tejat"],
     ["tejat", "propus"],
     ["propus", "1 geminorum"]
+  ],
+  "lib": [  
+    ["theta librae", "zuben elakrab"],
+    ["zuben elakrab", "zubeneschamali"],
+    ["zuben elakrab", "brachium"],
+    ["brachium", "Zubenelgenubi"],
+    ["Zubeneschamali", "Zubenelgenubi"]
+  ],
+  "aql": [  
+    ["altair", "tarazed"],
+    ["altair", "alshain"],
+    ["tarazed", "alshain"],
+    ["altair", "delta aquilae"],
+    ["delta aquilae", "zeta aquilae"],
+    ["zeta aquilae", "epsilon aquilae"],
+    ["delta aquilae", "eta aquilae"],
+    ["eta aquilae", "theta aquilae"],
+    ["delta aquilae", "lambda aquilae"]
   ]
 }

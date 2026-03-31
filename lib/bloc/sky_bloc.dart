@@ -71,10 +71,10 @@ class SkyBloc extends Bloc<SkyEvent, SkyState> {
       final bytes = data.buffer.asUint8List();
       final codec = await ui.instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
-      print('✅ Image loaded: $assetPath');
+      // print('✅ Image loaded: $assetPath');
       return frame.image;
     } catch (e) {
-      print('❌ Image failed: $e');
+      // print('❌ Image failed: $e');
       return null; // if image missing, return null safely
     }
   }

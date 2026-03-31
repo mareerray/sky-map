@@ -68,6 +68,8 @@ class SkyUtils {
     'leo': 'Leo',
     'cyg': 'Cygnus',
     'gem': 'Gemini',
+    'lib': 'Libra',
+    'aql': 'Aquila',
   };
 
   // 📝 Descriptions for each body

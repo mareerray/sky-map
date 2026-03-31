@@ -293,6 +293,8 @@ class SkyPainter extends CustomPainter {
     'leo': 'Leo',
     'cyg': 'Cygnus',
     'gem': 'Gemini',
+    'lib': 'Libra',
+    'aql': 'Aquila',
   };
 
   for (final entry in constName.entries) {
@@ -306,6 +308,8 @@ class SkyPainter extends CustomPainter {
     'leo': 'regulus',   // brightest in Leo
     'cyg': 'alpha cygni',     // brightest in Cygnus
     'gem': 'pollux',    // brightest in Gemini
+    'lib': 'zubeneschamali', // brightest in Libra
+    'aql': 'altair',    // brightest in Aquila
   }[acronym];
 
     if (targetStarName == null) continue;

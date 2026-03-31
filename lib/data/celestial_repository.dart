@@ -11,8 +11,8 @@ import 'astro_calculator.dart';
 class CelestialRepository {
   final _api = AstronomyApiService();
 
-  // Your 6 chosen constellations
-  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem'};
+  // Your 8 chosen constellations
+  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql'};
 
   // --------------------- Load Objects from API ---------------------
 
@@ -176,6 +176,8 @@ class CelestialRepository {
       'leo': 'LEO',
       'cyg': 'CYGNUS',
       'gem': 'GEMINI',
+      'lib': 'LIBRA',
+      'aql': 'AQUILA',
     };
 
     for (final conKey in _constellations) {
