@@ -41,6 +41,7 @@ dependencies:
   astronomia: ^0.3.2 #For astronomical calculations
   google_fonts: ^8.0.2 #For custom fonts
   flutter_dotenv: ^6.0.0 #For loading API keys from .env file
+  flutter_compass: ^0.8.1 #For compass heading
 
 dev_dependencies:
   flutter_test:

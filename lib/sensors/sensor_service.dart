@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 
 class SensorData {
   final double azimuth;  // horizontal direction (0-360°)
@@ -18,7 +19,7 @@ Future<Position> getLocation() async {
 class SensorService {
   // Raw sensor values
   List<double> _accelerometer = [0, 0, 9.8];
-  List<double> _magnetometer  = [0, 1, 0];
+  // List<double> _magnetometer  = [0, 1, 0];
 
   double _smoothAzimuth  = 0;
   double _smoothAltitude = 0;
@@ -35,6 +36,7 @@ class SensorService {
 
   StreamSubscription? _accelSub;
   StreamSubscription? _magSub;
+  double _compassHeading = 0; 
 
   void start() {
     // Force one initial emit so the sky renders immediately
@@ -47,12 +49,16 @@ class SensorService {
       _update();
     });
 
-    _magSub = magnetometerEventStream(
-      samplingPeriod: const Duration(milliseconds: 100), 
-    ).listen((event) {
-      _magnetometer = [event.x, event.y, event.z];
+    _magSub = FlutterCompass.events!.listen((event) {
+      _compassHeading = event.heading ?? _compassHeading;
       _update();
     });
+    // _magSub = magnetometerEventStream(
+    //   samplingPeriod: const Duration(milliseconds: 100), 
+    // ).listen((event) {
+    //   _magnetometer = [event.x, event.y, event.z];
+    //   _update();
+    // });
   }
 
   void _update() {
@@ -60,9 +66,9 @@ class SensorService {
     final ay = _accelerometer[1];
     final az = _accelerometer[2];
 
-    final mx = _magnetometer[0];
-    final my = _magnetometer[1];
-    final mz = _magnetometer[2];
+    // final mx = _magnetometer[0];
+    // final my = _magnetometer[1];
+    // final mz = _magnetometer[2];
 
     // ------ Altitude Calculation — how much you tilt the phone up/down ---------
     // Works correctly when holding phone upright (portrait mode)
@@ -71,26 +77,28 @@ class SensorService {
       math.sqrt(ax * ax + ay * ay),  // XY plane = base
     ) * (180 / math.pi);
 
+    // flutter_compass gives correct 0-360° on both iOS and Android
+    double azimuth = (_compassHeading + 360) % 360;
 
-    // Normalize accelerometer to get gravity direction
-    final double accNorm = math.sqrt(ax*ax + ay*ay + az*az);
-    final double axN = ax / accNorm;
-    final double ayN = ay / accNorm;
+    // // Normalize accelerometer to get gravity direction
+    // final double accNorm = math.sqrt(ax*ax + ay*ay + az*az);
+    // final double axN = ax / accNorm;
+    // final double ayN = ay / accNorm;
 
-    // Tilt-compensated magnetic North components
-    final double pitch = math.asin((-axN).clamp(-1.0, 1.0)); // Tilt forward around Y-axis
-    final double cosP = math.cos(pitch);
-    final double sinRoll = (cosP.abs() < 0.001) ? 0.0 : (ayN / cosP).clamp(-1.0, 1.0);
-    final double roll = math.asin(sinRoll); // Tilt sideways around X-axis
+    // // Tilt-compensated magnetic North components
+    // final double pitch = math.asin((-axN).clamp(-1.0, 1.0)); // Tilt forward around Y-axis
+    // final double cosP = math.cos(pitch);
+    // final double sinRoll = (cosP.abs() < 0.001) ? 0.0 : (ayN / cosP).clamp(-1.0, 1.0);
+    // final double roll = math.asin(sinRoll); // Tilt sideways around X-axis
 
-    final double magX = mx * math.cos(pitch) + mz * math.sin(pitch);
-    final double magY = mx * math.sin(roll) * math.sin(pitch)
-                      + my * math.cos(roll)
-                      - mz * math.sin(roll) * math.cos(pitch);
+    // final double magX = mx * math.cos(pitch) + mz * math.sin(pitch);
+    // final double magY = mx * math.sin(roll) * math.sin(pitch)
+    //                   + my * math.cos(roll)
+    //                   - mz * math.sin(roll) * math.cos(pitch);
 
-    // ------ Azimuth Calculation — which direction you’re facing (0-360°)/Compass direction ---------
-    double azimuth = math.atan2(-magX, magY) * (180 / math.pi);
-    azimuth = (azimuth + 360) % 360; // normalize to 0-360
+    // // ------ Azimuth Calculation — which direction you’re facing (0-360°)/Compass direction ---------
+    // double azimuth = math.atan2(-magX, magY) * (180 / math.pi);
+    // azimuth = (azimuth + 360) % 360; // normalize to 0-360
 
     // Add declination correction 
     const double declination = 10.0; 
