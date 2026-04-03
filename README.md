@@ -14,7 +14,7 @@ Interactive Flutter sky map using device sensors (GPS, accelerometer, magnetomet
 ## Screenshots
 
 <div>
-<img src="assets/screenshots/welcome_dialog.jpg" width="280" height="550"> <img src="assets/screenshots/sky_map_1.jpg" width="280" height="550"> <img src="assets/screenshots/pla_desc.jpg" width="280" height="550"> <img src="assets/screenshots/cons_desc.jpg" width="280" height="550">
+<img src="assets/screenshots/welcome_dialog.jpg" width="280" height="600"> <img src="assets/screenshots/sky_map_1.jpg" width="280" height="600"> <img src="assets/screenshots/pla_desc.jpg" width="280" height="600"> <img src="assets/screenshots/cons_desc.jpg" width="280" height="600">
 </div>
 
 ## Data Sources

@@ -8,7 +8,7 @@
 PRODUCT_NAME = sky_map
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.skyMap
+PRODUCT_BUNDLE_IDENTIFIER = com.mayuree.skyMap
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
