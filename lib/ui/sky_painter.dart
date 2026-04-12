@@ -12,7 +12,7 @@ class SkyPainter extends CustomPainter {
 
   final double phoneAzimuth;
   final double phoneAltitude;
-  static const double fov = 120.0;
+  static const double fov = 60.0;
 
   // static int _paintCount = 0;
   // static DateTime _lastFpsTime = DateTime.now();

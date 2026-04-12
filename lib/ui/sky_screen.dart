@@ -7,6 +7,8 @@ import '../models/celestial_object.dart';
 import '../utils/sky_utils.dart';
 import 'sky_painter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SkyScreen extends StatefulWidget {
   const SkyScreen({super.key});
@@ -19,6 +21,12 @@ class _SkyScreenState extends State<SkyScreen> {
   CelestialObject? _selectedObject;
   String? imageAsset;
 
+  Future<void> _openLink(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   void initState() {
@@ -28,6 +36,8 @@ class _SkyScreenState extends State<SkyScreen> {
       context.read<SkyBloc>().add(LoadSkyObjects());
     });
   }
+
+
 
   void _onTap(TapUpDetails details, List<CelestialObject> objects, Size size, double phoneAzimuth, double phoneAltitude) {
     final tapPos = details.localPosition;
@@ -69,6 +79,7 @@ class _SkyScreenState extends State<SkyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      // ------ App bar with title and sensor info --------
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60), 
         child: BlocBuilder<SkyBloc, SkyState>(
@@ -124,7 +135,9 @@ class _SkyScreenState extends State<SkyScreen> {
             );
           },
         ),
-      ),      
+      ), 
+
+      // ------ Body with sky canvas and info card --------
       body: BlocBuilder<SkyBloc, SkyState>(
         builder: (context, state) {
 
@@ -161,7 +174,7 @@ class _SkyScreenState extends State<SkyScreen> {
                     // Info card — only visible when an object is tapped
                     if (_selectedObject != null)
                       Positioned(
-                        bottom: 45,
+                        bottom: 15,
                         left: 0,
                         right: 0,
                         child: Container(
@@ -225,6 +238,52 @@ class _SkyScreenState extends State<SkyScreen> {
 
           return const SizedBox.shrink();
         },
+      ),
+
+      // ------ Footer with developer info and links --------
+      bottomNavigationBar: Container(
+        color: Colors.black.withValues(alpha:0.92),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: SafeArea(
+          top: false,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              Text(
+                '© 2026 Mayuree Reunsati',
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () => _openLink('https://github.com/mareerray'),
+                    child: const FaIcon(
+                      FontAwesomeIcons.github,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () => _openLink('https://www.linkedin.com/in/mayuree-reunsati'),
+                    child: const FaIcon(
+                      FontAwesomeIcons.linkedin,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
