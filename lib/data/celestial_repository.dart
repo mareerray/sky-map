@@ -10,8 +10,8 @@ import 'astro_calculator.dart';
 class CelestialRepository {
   final _api = AstronomyApiService();
 
-  // 11 chosen constellations
-  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql', 'aqr', 'cet', 'her'};
+  // 15 chosen constellations
+  static const _constellations = {'ori', 'uma', 'cas', 'leo', 'cyg', 'gem', 'lib', 'aql', 'aqr', 'cet', 'her', 'lyr', 'dra', 'mon', 'cnc', 'and', 'peg', 'boo'};
 
   // --------------------- Load Objects from API ---------------------
 

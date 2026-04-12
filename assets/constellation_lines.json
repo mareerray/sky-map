@@ -166,5 +166,77 @@
     ["maasym","mu herculis"],
     ["mu herculis","xi herculis"],
     ["xi herculis","omicron herculis"]
+  ],
+  "lyr": [
+    ["vega", "zeta lyrae"],
+    ["zeta lyrae", "delta lyrae"],
+    ["delta lyrae", "sulafat"],
+    ["sulafat", "sheliak"],
+    ["sheliak", "zeta lyrae"]
+  ],
+  "dra": [
+    ["rastaban", "eltanin"],
+    ["rastaban", "nu draconis"],
+    ["nu draconis", "grumium"],
+    ["eltanin", "grumium"],
+    ["grumium", "altais"],
+    ["altais", "epsilon draconis a"],
+    ["epsilon draconis a", "tau draconis"],
+    ["tau draconis", "chi draconis"],
+    ["chi draconis", "aldhibah"],
+    ["aldhibah", "athebyne"],
+    ["athebyne", "theta draconis"],
+    ["theta draconis", "edasich"],
+    ["edasich", "thuban"],
+    ["thuban", "kappa draconis"],
+    ["kappa draconis", "giausar"]
+  ],
+  "mon": [
+    ["alpha monocerotis", "zeta monocerotis"],
+    ["zeta monocerotis", "delta monocerotis"],
+    ["delta monocerotis", "epsilon monocerotis"],
+    ["delta monocerotis", "beta monocerotis"],
+    ["epsilon monocerotis", "hd 42111"],
+    ["beta monocerotis", "gamma monocerotis"]
+  ],
+  "cnc": [
+    ["acubens", "asellus australis"],
+    ["tarf", "asellus australis"],
+    ["asellus australis", "asellus borealis"],
+    ["asellus borealis", "iota cancri"],
+    ["asellus borealis", "chi cancri"]
+  ],
+  "peg": [
+    ["enif", "biham"],
+    ["biham", "homam"],
+    ["homam", "markab"],
+    ["markab", "scheat"],
+    ["markab", "algenib"],
+    ["algenib", "alpheratz"],
+    ["alpheratz", "scheat"],
+    ["scheat", "matar"],
+    ["scheat", "sadalbari"],
+    ["matar", "pi pegasi"],
+    ["sadalbari", "lambda pegasi"],
+    ["lambda pegasi", "iota pegasi"],
+    ["iota pegasi", "kappa pegasi"]
+  ],
+  "and": [
+    ["alpheratz", "delta andromedae"],
+    ["mirach", "delta andromedae"],
+    ["mirach", "mu andromedae"],
+    ["mu andromedae", "nu andromedae"],
+    ["mirach", "almach"]
+  ],
+  "boo": [
+    ["zeta bootis", "arcturus"],
+    ["arcturus", "muphrid"],
+    ["muphrid", "upsilon bootis"],
+    ["arcturus", "rho bootis"],
+    ["arcturus", "izar"],
+    ["rho bootis", "seginus"],
+    ["seginus", "nekkar"],
+    ["nekkar", "delta bootis"],
+    ["delta bootis", "izar"]
   ]
 }

@@ -75,6 +75,13 @@ class SkyUtils {
     'aqr': 'Aquarius',
     'cet': 'Cetus',
     'her': 'Hercules',
+    'lyr': 'Lyra',
+    'dra': 'Draco',
+    'mon': 'Monoceros',
+    'cnc': 'Cancer',
+    'and': 'Andromeda',
+    'peg': 'Pegasus',
+    'boo': 'Boötes',
   };
 
   static Map<String, String> planetImageAssets = {
@@ -104,6 +111,13 @@ class SkyUtils {
       'aqr': 'Aquarius the Water Bearer is one of the oldest constellations, dating back to ancient Babylon. It sits in a region of the sky called the Sea.',
       'cet': 'Cetus the Sea Monster is one of the largest constellations in the sky. It is home to Mira, the most famous variable star, and Tau Ceti — a nearby Sun-like star.',
       'her': 'Hercules the Hero is the fifth largest constellation. It contains the Great Hercules Cluster — one of the brightest globular clusters visible to the naked eye.',
+      'lyr': 'Lyra the Lyre is a small but prominent constellation in the northern hemisphere. It contains the bright star Vega, one of the brightest stars in the night sky.',
+      'dra': 'Draco the Dragon winds around the north celestial pole. It contains Thuban, which was the pole star around 2700 BC, and the Cat\'s Eye Nebula.',
+      'mon': 'Monoceros the Unicorn is a faint constellation located on the celestial equator. It contains the Rosette Nebula and the Christmas Tree Cluster.',
+      'cnc': 'Cancer the Crab is a zodiac constellation. It is visible in the northern hemisphere during summer months.',
+      'and': 'Andromeda is a large spiral galaxy visible in the northern hemisphere. It is the closest major galaxy to the Milky Way.',
+      'peg': 'Pegasus the Winged Horse is a large constellation in the northern sky. It contains the Great Square asterism and the globular cluster M15.',
+      'boo': 'Boötes the Herdsman is a large constellation in the northern sky. It contains the bright star Arcturus, one of the brightest stars in the night sky.',
     };
     return descriptions[id.toLowerCase()] ?? 'A constellation in the night sky.';
   }
