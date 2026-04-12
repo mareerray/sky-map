@@ -82,6 +82,9 @@ class SkyUtils {
     'and': 'Andromeda',
     'peg': 'Pegasus',
     'boo': 'Boötes',
+    'vir': 'Virgo',
+    'hya': 'Hydra',
+    'lep': 'Lepus'
   };
 
   static Map<String, String> planetImageAssets = {
@@ -118,6 +121,9 @@ class SkyUtils {
       'and': 'Andromeda is a large spiral galaxy visible in the northern hemisphere. It is the closest major galaxy to the Milky Way.',
       'peg': 'Pegasus the Winged Horse is a large constellation in the northern sky. It contains the Great Square asterism and the globular cluster M15.',
       'boo': 'Boötes the Herdsman is a large constellation in the northern sky. It contains the bright star Arcturus, one of the brightest stars in the night sky.',
+      'vir': 'Virgo the Virgin is a large constellation in the northern sky. It contains the bright star Spica, one of the brightest stars in the night sky.',
+      'hya': 'Hydra the Water Snake is the largest constellation in the sky. It contains the bright star Alphard and the open cluster M48.',
+      'lep': 'Lepus the Hare is a small constellation located just south of Orion. It contains the bright star Arneb and the globular cluster M79.',
     };
     return descriptions[id.toLowerCase()] ?? 'A constellation in the night sky.';
   }
